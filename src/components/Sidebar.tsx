@@ -26,7 +26,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div className="fixed inset-y-0 left-0 w-64 bg-zinc-800 border-r border-zinc-700 transform transition-transform duration-200 ease-in-out z-50">
       <div className="h-12 flex items-center justify-between px-4 border-b border-zinc-700">
-        <h2 className="font-semibold text-zinc-100">Discord Clone</h2>
+        <h2 className="font-semibold text-zinc-100">Concord</h2>
         <button onClick={onClose} className="text-zinc-400 hover:text-zinc-100">
           <X size={20} />
         </button>
