@@ -9,8 +9,8 @@ interface ChatMessageProps {
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser }) => {
   return (
-    <div className="px-4 py-0.5 hover:bg-zinc-900/50 group flex items-start gap-4 relative">
-      <div className="relative flex-shrink-0 w-10 h-10 mt-1">
+    <div className="lg:px-24 px-4 py-0.5 hover:bg-zinc-900/50 group flex justify-center items-center gap-4 relative">
+      <div className="relative flex-shrink-0 w-14 h-14">
         <img
           src={message.sender.avatar}
           alt={message.sender.name}
@@ -21,15 +21,15 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser
         )} */}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-baseline gap-2">
-          <span className="font-medium text-base hover:underline cursor-pointer">
+        <div className="flex items-baseline gap-12">
+          <span className="font-medium text-base text-white/80 hover:underline cursor-pointer">
             {message.sender.name}
           </span>
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs text-[#9D9DA7]">
             {formatDistanceToNow(message.timestamp)}
           </span>
         </div>
-        <p className="text-zinc-300 break-words">{message.content}</p>
+        <p className="text-[#9D9DA7] break-words">{message.content}</p>
       </div>
     </div>
   );

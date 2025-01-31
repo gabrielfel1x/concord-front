@@ -17,3 +17,13 @@ export interface Channel {
   name: string;
   messages: Message[];
 }
+
+export interface AuthState {
+  isAuthenticated: boolean;
+  user: User | null;
+}
+
+export interface SidebarState {
+  isOpen: boolean;
+  activeTab: 'channels' | 'friends';
+}
