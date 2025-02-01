@@ -20,7 +20,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
 
   return (
     <>
-      <div className="px-4 py-4" style={{ backgroundColor: "#18181B", borderTop: "1px solid #202022" }}>
+      <div className="px-4 py-4 fixed w-full bottom-0" style={{ backgroundColor: "#18181B", borderTop: "1px solid #202022" }}>
         <div className="max-w-4xl mx-auto">
           <form onSubmit={handleSubmit} className="relative">
             <button

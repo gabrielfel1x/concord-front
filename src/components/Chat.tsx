@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Menu, Users, Bell, Hash, Pin, Inbox, HelpCircle, Search, LogOut } from 'lucide-react';
+import { Menu, Users, Bell, Hash, Home, Inbox, HelpCircle, Search, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
@@ -13,7 +13,7 @@ export function Chat() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>(channels[0].messages);
-  const [currentChannel, setCurrentChannel] = useState<Channel>(channels[0]);
+  const [currentChannel, setCurrentChannel] = useState<Channel | null>(channels[0]);
   const [sidebarState, setSidebarState] = useState<SidebarState>({
     isOpen: false,
     activeTab: 'channels',
@@ -25,6 +25,11 @@ export function Chat() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  const homeReturn = () => {
+    setCurrentChannel(null);
+    setMessages([]);
+  };
 
   const handleLogout = () => {
     logout();
@@ -66,7 +71,7 @@ export function Chat() {
       />
 
       <div className="flex-1 flex flex-col">
-        <header className="h-20 lg:px-24 px-4 bg-[#18181B] border-b border-[#202022] flex items-center justify-between">
+        <header className="fixed z-10 w-full h-20 lg:px-24 px-4 bg-[#18181B] bg-opacity-70 border-b border-[#202022] flex items-center justify-between backdrop-blur-md">
           <div className="flex items-center gap-8">
             <button
               onClick={() => setSidebarState({ ...sidebarState, isOpen: true })}
@@ -75,14 +80,14 @@ export function Chat() {
               <Menu size={20} className="text-[#9D9DA7] hover:text-white/80" />
             </button>
             <div className="flex flex-row items-center justify-center gap-2">
-              <Hash size={20} className="text-[#9D9DA7" />
-              <h1 className="font-semibold">{currentChannel.name}</h1>
+              {currentChannel && <Hash size={20} className="text-[#9D9DA7]" />}
+              <h1 className="font-semibold">{currentChannel?.name}</h1>
             </div>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center bg-[#18181B] rounded-md gap-2">
-              <button className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer">
-                <Pin size={20} />
+              <button className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer" onClick={homeReturn}>
+                <Home size={20} />
               </button>
               <button className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer">
                 <Bell size={20} />
@@ -121,20 +126,25 @@ export function Chat() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[#202022] scrollbar-track-transparent flex flex-col-reverse">
-          <div ref={messagesEndRef} />
-          <div className="py-4 flex flex-col gap-4">
-            {filteredMessages.map((message) => (
-              <ChatMessage
-                key={message.id}
-                message={message}
-                isCurrentUser={message.sender.id === user?.id}
-              />
-            ))}
-          </div>
-        </div>
-
-        <ChatInput onSendMessage={handleSendMessage} />
+        {currentChannel ? (
+          <>
+            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[#202022] scrollbar-track-transparent flex flex-col-reverse mb-24">
+              <div ref={messagesEndRef} />
+              <div className="py-4 flex flex-col gap-4">
+                {filteredMessages.map((message) => (
+                  <ChatMessage
+                    key={message.id}
+                    message={message}
+                    isCurrentUser={message.sender.id === user?.id}
+                  />
+                ))}
+              </div>
+            </div>
+            <ChatInput onSendMessage={handleSendMessage} />
+          </>
+        ) : (
+          <div className="flex-1 bg-[#18181B]" />
+        )}
       </div>
 
       <Modal
