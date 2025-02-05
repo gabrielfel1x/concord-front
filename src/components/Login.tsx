@@ -36,7 +36,7 @@ export function Login() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="peer w-full px-3 pt-5 pb-2 bg-zinc-700 border-none border-zinc-600 rounded-sm text-zinc-100 placeholder-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="peer w-full px-3 pt-5 pb-2 bg-zinc-700 border-none border-zinc-600 rounded-sm text-zinc-100 placeholder-transparent focus:outline-none focus:ring-2 focus:ring-[#34AB70] focus:border-transparent"
                 placeholder="Email address"
               />
               <label
