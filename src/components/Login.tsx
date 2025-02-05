@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { LogIn } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+// import concordLogo from "../../public/concord.png"
 
 export function Login() {
   const [email, setEmail] = useState('');
@@ -13,25 +13,21 @@ export function Login() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     login(email, password);
-    // Redirect to the page they tried to visit or default to /chat
     const from = location.state?.from?.pathname || '/chat';
     navigate(from);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-900 px-4">
-      <div className="max-w-md w-full space-y-8 bg-zinc-800 p-8 rounded-lg shadow-xl">
+    <div className="min-h-screen flex items-center justify-center bg-[#0E0E10] px-4">
+      <div className="max-w-xl w-full space-y-8 bg-[#18181B] p-24 rounded-sm shadow-xl">
         <div className="text-center">
-          <LogIn className="mx-auto h-12 w-12 text-blue-500" />
-          <h2 className="mt-6 text-3xl font-bold text-zinc-100">Welcome back!</h2>
-          <p className="mt-2 text-sm text-zinc-400">Please sign in to your account</p>
+          {/* <img src={concordLogo} className="mx-auto h-28 w-28 -mb-12" /> */}
+          <h2 className="mt-6 text-3xl font-bold text-zinc-100">We Missed You!</h2>
+          <p className="text-sm text-zinc-400">Please sign in to your account</p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="text-sm font-medium text-zinc-300">
-                Email address
-              </label>
+            <div className="relative">
               <input
                 id="email"
                 name="email"
@@ -40,13 +36,17 @@ export function Login() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-zinc-700 border border-zinc-600 rounded-md text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="peer w-full px-3 pt-5 pb-2 bg-zinc-700 border-none border-zinc-600 rounded-sm text-zinc-100 placeholder-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Email address"
               />
-            </div>
-            <div>
-              <label htmlFor="password" className="text-sm font-medium text-zinc-300">
-                Password
+              <label
+                htmlFor="email"
+                className="absolute left-3 top-2 text-sm text-zinc-400 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-zinc-500 peer-focus:top-2 peer-focus:text-sm peer-focus:text-zinc-300"
+              >
+                Email address
               </label>
+            </div>
+            <div className="relative">
               <input
                 id="password"
                 name="password"
@@ -55,21 +55,28 @@ export function Login() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-zinc-700 border border-zinc-600 rounded-md text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="peer w-full px-3 pt-5 pb-2 bg-zinc-700 border-none border-zinc-600 rounded-sm text-zinc-100 placeholder-transparent focus:outline-none focus:ring-2 focus:ring-[#34AB70] focus:border-transparent"
+                placeholder="Password"
               />
+              <label
+                htmlFor="password"
+                className="absolute left-3 top-2 text-sm text-zinc-400 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-zinc-500 peer-focus:top-2 peer-focus:text-sm peer-focus:text-zinc-300"
+              >
+                Password
+              </label>
             </div>
           </div>
 
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="w-full flex justify-center py-4 px-4 border border-transparent rounded-sm text-sm font-medium text-white bg-[#34AB70] hover:bg-[#34AB70]/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#34AB70]"
             >
               Sign in
             </button>
             <Link
               to="/register"
-              className="mt-4 block text-center text-sm text-blue-500 hover:text-blue-400"
+              className="mt-4 block text-center text-sm text-[#34AB70] hover:text-[#34AB70]/80"
             >
               Don't have an account? Create one
             </Link>
