@@ -38,7 +38,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={() => setActiveTab('channels')}
             className={`flex-1 p-3 text-sm font-medium ${
               activeTab === 'channels'
-                ? 'text-zinc-100 border-b-2 border-blue-500'
+                ? 'text-zinc-100 border-b-2 border-[#34AB70]'
                 : 'text-zinc-400 hover:text-zinc-100'
             }`}
           >
@@ -51,7 +51,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={() => setActiveTab('friends')}
             className={`flex-1 p-3 text-sm font-medium ${
               activeTab === 'friends'
-                ? 'text-zinc-100 border-b-2 border-blue-500'
+                ? 'text-zinc-100 border-b-2 border-[#34AB70]'
                 : 'text-zinc-400 hover:text-zinc-100'
             }`}
           >
