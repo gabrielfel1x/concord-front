@@ -26,9 +26,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex">
       <div className="w-lg bg-zinc-800 border-r border-zinc-700 shadow-lg">
-        <div className="h-12 flex items-center justify-between px-4 border-b border-zinc-700">
-          <h2 className="font-semibold text-zinc-100">Concord</h2>
-          <button onClick={onClose} className="text-zinc-400 hover:text-zinc-100">
+        <div className="h-12 flex items-center justify-between p-8 border-b border-zinc-700">
+          <h2 className="font-bold text-zinc-100 text-xl">Concord</h2>
+          <button onClick={onClose} className="text-zinc-400 hover:text-zinc-100 cursor-pointer">
             <X size={20} />
           </button>
         </div>
@@ -42,7 +42,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 : 'text-zinc-400 hover:text-zinc-100'
             }`}
           >
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-2 cursor-pointer p-2">
               <MessageSquare size={16} />
               <span>Channels</span>
             </div>
@@ -55,7 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 : 'text-zinc-400 hover:text-zinc-100'
             }`}
           >
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-2 cursor-pointer p-2">
               <Users size={16} />
               <span>Friends</span>
             </div>
@@ -72,7 +72,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <button
                   key={channel.id}
                   onClick={() => onChannelSelect(channel)}
-                  className="w-full text-left px-2 py-1 rounded hover:bg-zinc-700/50 text-zinc-300 hover:text-zinc-100 transition-colors"
+                  className="cursor-pointer w-full text-left px-2 py-1 rounded hover:bg-zinc-700/50 text-zinc-300 hover:text-zinc-100 transition-colors"
                 >
                   # {channel.name}
                 </button>
@@ -86,7 +86,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {friends.map((friend) => (
                 <div
                   key={friend.id}
-                  className="flex items-center gap-3 px-2 py-1 rounded hover:bg-zinc-700/50"
+                  className="flex items-center gap-3 px-2 py-1 rounded hover:bg-zinc-700/50 cursor-pointer"
                 >
                   <div className="relative">
                     <img
