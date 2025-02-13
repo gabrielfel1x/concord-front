@@ -1,26 +1,38 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-// import concordLogo from "../../public/concord.png"
+import { useAuth } from '../hooks/useAuth';
+import { Toaster, toast } from 'react-hot-toast';
 
 export function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [password_confirmation, setpassword_confirmation] = useState('');
   const [name, setName] = useState('');
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    register(email, password, name);
-    navigate('/chat');
+
+    if (password !== password_confirmation) {
+      toast.error("Passwords do not match!");
+      return;
+    }
+
+    try {
+      await register(name, email, password, password_confirmation);
+      toast.success("Account created successfully!");
+      navigate('/chat');
+    } catch {
+      toast.error("Failed to register. Please try again.");
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0E0E10] px-4">
+      <Toaster position='top-center' />
       <div className="max-w-xl w-full space-y-8 bg-[#18181B] p-24 rounded-sm shadow-xl">
         <div className="text-center">
-          {/* <img src={concordLogo} className="mx-auto h-28 w-28 -mb-12" /> */}
           <h2 className="mt-6 text-3xl font-bold text-zinc-100">Join us today!</h2>
           <p className="text-sm text-zinc-400">Create an account to get started</p>
         </div>
@@ -34,12 +46,12 @@ export function Register() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="peer w-full px-3 pt-5 pb-2 bg-zinc-700 border-none border-zinc-600 rounded-sm text-zinc-100 placeholder-transparent focus:outline-none focus:ring-2 focus:ring-[#34AB70] focus:border-transparent"
+                className="peer w-full px-3 pt-5 pb-2 bg-zinc-700 border-none rounded-sm text-zinc-100 placeholder-transparent focus:outline-none focus:ring-2 focus:ring-[#34AB70]"
                 placeholder="Full Name"
               />
               <label
                 htmlFor="name"
-                className="absolute left-3 top-2 text-sm text-zinc-400 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-zinc-500 peer-focus:top-2 peer-focus:text-sm peer-focus:text-zinc-300"
+                className="absolute left-3 top-2 text-sm text-zinc-400 transition-all peer-placeholder-shown:top-3 peer-focus:top-2 peer-focus:text-sm peer-focus:text-zinc-300"
               >
                 Full Name
               </label>
@@ -53,12 +65,12 @@ export function Register() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="peer w-full px-3 pt-5 pb-2 bg-zinc-700 border-none border-zinc-600 rounded-sm text-zinc-100 placeholder-transparent focus:outline-none focus:ring-2 focus:ring-[#34AB70] focus:border-transparent"
+                className="peer w-full px-3 pt-5 pb-2 bg-zinc-700 border-none rounded-sm text-zinc-100 placeholder-transparent focus:outline-none focus:ring-2 focus:ring-[#34AB70]"
                 placeholder="Email address"
               />
               <label
                 htmlFor="email"
-                className="absolute left-3 top-2 text-sm text-zinc-400 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-zinc-500 peer-focus:top-2 peer-focus:text-sm peer-focus:text-zinc-300"
+                className="absolute left-3 top-2 text-sm text-zinc-400 transition-all peer-placeholder-shown:top-3 peer-focus:top-2 peer-focus:text-sm peer-focus:text-zinc-300"
               >
                 Email address
               </label>
@@ -72,14 +84,32 @@ export function Register() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="peer w-full px-3 pt-5 pb-2 bg-zinc-700 border-none border-zinc-600 rounded-sm text-zinc-100 placeholder-transparent focus:outline-none focus:ring-2 focus:ring-[#34AB70] focus:border-transparent"
+                className="peer w-full px-3 pt-5 pb-2 bg-zinc-700 border-none rounded-sm text-zinc-100 placeholder-transparent focus:outline-none focus:ring-2 focus:ring-[#34AB70]"
                 placeholder="Password"
               />
               <label
                 htmlFor="password"
-                className="absolute left-3 top-2 text-sm text-zinc-400 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-zinc-500 peer-focus:top-2 peer-focus:text-sm peer-focus:text-zinc-300"
+                className="absolute left-3 top-2 text-sm text-zinc-400 transition-all peer-placeholder-shown:top-3 peer-focus:top-2 peer-focus:text-sm peer-focus:text-zinc-300"
               >
                 Password
+              </label>
+            </div>
+            <div className="relative">
+              <input
+                id="confirm-password"
+                name="confirm-password"
+                type="password"
+                required
+                value={password_confirmation}
+                onChange={(e) => setpassword_confirmation(e.target.value)}
+                className="peer w-full px-3 pt-5 pb-2 bg-zinc-700 border-none rounded-sm text-zinc-100 placeholder-transparent focus:outline-none focus:ring-2 focus:ring-[#34AB70]"
+                placeholder="Confirm Password"
+              />
+              <label
+                htmlFor="confirm-password"
+                className="absolute left-3 top-2 text-sm text-zinc-400 transition-all peer-placeholder-shown:top-3 peer-focus:top-2 peer-focus:text-sm peer-focus:text-zinc-300"
+              >
+                Confirm Password
               </label>
             </div>
           </div>

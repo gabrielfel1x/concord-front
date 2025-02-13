@@ -5,7 +5,7 @@ import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { Sidebar } from './Sidebar';
 import { Modal } from './Modal';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { channels, users } from '../mockData';
 import type { Message, SidebarState, Channel } from '../types';
 

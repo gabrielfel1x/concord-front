@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-// import concordLogo from "../../public/concord.png"
+import { useAuth } from '../hooks/useAuth';
+import { Toaster } from 'react-hot-toast';
 
 export function Login() {
   const [email, setEmail] = useState('');
@@ -19,6 +19,7 @@ export function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0E0E10] px-4">
+      <Toaster position='top-center' />
       <div className="max-w-xl w-full space-y-8 bg-[#18181B] p-24 rounded-sm shadow-xl">
         <div className="text-center">
           {/* <img src={concordLogo} className="mx-auto h-28 w-28 -mb-12" /> */}

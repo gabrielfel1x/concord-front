@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 import { UserPublic } from "../types";
 import { login as loginService, register as registerService } from "../services/authService";
+import toast from "react-hot-toast";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserPublic | null>(null);
@@ -29,8 +30,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem("authToken", userData.token);
       localStorage.setItem("user", JSON.stringify(userData.user));
       setUser(userData.user);
+      toast.success("Login successful! 🎉");
     } catch (error) {
       console.error("Erro ao logar:", error);
+      toast.error("Failed to login. Please check your credentials.");
       throw new Error("Erro ao logar");
     }
   };
@@ -39,8 +42,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await registerService({ name, email, password, password_confirmation: password });
       await login(email, password);
+      toast.success("Account created successfully! 🎉");
     } catch (err) {
       console.error("Erro ao registrar:", err);
+      toast.error("Failed to register. Please try again.");
       throw new Error("Erro ao registrar");
     }
   };
