@@ -4,6 +4,14 @@ export interface Message {
   sender: User;
   timestamp: Date;
 }
+
+export interface UserAttr {
+  id: string;
+  attributes: {
+    name: string;
+    email: string;
+  };
+}
 export interface User {
 	name: string;
 	email: string;
