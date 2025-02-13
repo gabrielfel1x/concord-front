@@ -12,8 +12,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const token = localStorage.getItem("authToken");
       const storedUser = localStorage.getItem("user");
-
-      if (token && storedUser) {
+  
+      if (!token || !storedUser || storedUser === "undefined") {
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("user");
+        setUser(null);
+      } else {
         setUser(JSON.parse(storedUser));
       }
     } catch (error) {
@@ -54,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
     setUser(null);
-  };
+  };  
 
   const value = {
     user,

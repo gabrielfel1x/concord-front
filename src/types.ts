@@ -24,6 +24,14 @@ export interface AuthResponse {
   user: UserPublic;
   token: string;
 }
+
+export interface APIResponse<T> {
+  data: {
+    id: string;
+    type: string;
+    attributes: T;
+  };
+}
 export interface Channel {
   id: string;
   name: string;
