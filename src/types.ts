@@ -4,14 +4,26 @@ export interface Message {
   sender: User;
   timestamp: Date;
 }
-
 export interface User {
-  id: string;
-  name: string;
-  avatar: string;
-  online: boolean;
+	name: string;
+	email: string;
+	password: string;
+	password_confirmation: string;
 }
 
+export type UserPublic = Omit<User, 'password' | 'password_confirmation'>;
+export interface RootObjectUser {
+	user: User;
+}
+
+export type LoginCredentials = Pick<User, 'email' | 'password'>
+
+export type ObjectUserLogin = { user: LoginCredentials }
+
+export interface AuthResponse {
+  user: UserPublic;
+  token: string;
+}
 export interface Channel {
   id: string;
   name: string;
