@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Menu, Users, Bell, Hash, Home, Inbox, HelpCircle, Search, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ChatMessage } from './ChatMessage';
@@ -9,6 +9,7 @@ import { useAuth } from '../hooks/useAuth';
 import { channels, users } from '../mockData';
 import type { Message, SidebarState, Channel } from '../types';
 import { Toaster } from 'react-hot-toast';
+import { UserAvatar } from './UserAvatar';
 
 export function Chat() {
   const { user, logout } = useAuth();
@@ -58,6 +59,13 @@ export function Chat() {
   const filteredMessages = messages.filter((message) =>
     message.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const getRandomColor = () => {
+    const colors = ["#FF5733", "#33FF57", "#3357FF", "#F1C40F", "#8E44AD", "#2ECC71"];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
+
+  const userColor = useMemo(getRandomColor, []);
 
   return (
     <div className="min-h-screen bg-[#18181B] text-[#9D9DA7] flex">
@@ -118,11 +126,7 @@ export function Chat() {
                 onClick={() => setIsUserModalOpen(true)}
                 className="p-2 text-[#9D9DA7] cursor-pointer rounded-sm transition-transform duration-300 ease-in-out hover:scale-110"
               >
-                <img
-                  src={user?.avatar}
-                  alt={user?.name}
-                  className="w-6 h-6 rounded-full"
-                />
+                <UserAvatar name={user?.name} color={userColor} />
               </button>
             </div>
           </div>
@@ -156,11 +160,7 @@ export function Chat() {
       >
         <div className="space-y-4">
           <div className="flex items-center gap-3 p-2">
-            <img
-              src={user?.avatar}
-              alt={user?.name}
-              className="w-10 h-10 rounded-full"
-            />
+            <UserAvatar name={user?.name} color={userColor} />
             <div>
               <div className="font-medium text-white">{user?.name}</div>
               <div className="text-sm text-[#9D9DA7]">Online</div>
