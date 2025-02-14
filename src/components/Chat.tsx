@@ -8,7 +8,6 @@ import { Modal } from './Modal';
 import { useAuth } from '../hooks/useAuth';
 import { channels, users } from '../mockData';
 import type { Message, SidebarState, Channel } from '../types';
-import { Toaster } from 'react-hot-toast';
 import { UserAvatar } from './UserAvatar';
 import { getRandomColor } from '../hooks/getRandomColor';
 
@@ -71,12 +70,11 @@ export function Chat() {
         activeTab={sidebarState.activeTab}
         setActiveTab={(tab) => setSidebarState({ ...sidebarState, activeTab: tab })}
         channels={channels}
-        friends={users.filter((u) => u.id !== user?.id)}
+        users={users.filter((u) => u.id !== user?.id)}
         onChannelSelect={handleChannelSelect}
       />
 
       <div className="flex-1 flex flex-col">
-      <Toaster position='top-center' />
         <header className="fixed z-10 w-full h-20 lg:px-24 px-4 bg-[#18181B] bg-opacity-70 border-b border-[#202022] flex items-center justify-between backdrop-blur-md">
           <div className="flex items-center gap-8">
             <button

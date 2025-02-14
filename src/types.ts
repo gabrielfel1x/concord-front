@@ -1,7 +1,7 @@
 export interface Message {
   id: string;
   content: string;
-  sender: User;
+  sender: UserPublic;
   timestamp: Date;
 }
 
@@ -19,6 +19,7 @@ export interface UserAttr {
   };
 }
 export interface User {
+  id?: string;
 	name: string;
 	email: string;
 	password: string;

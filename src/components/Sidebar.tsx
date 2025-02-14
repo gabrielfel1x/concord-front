@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { X, Plus } from "lucide-react";
-import { Channel, SidebarState, UserAttr } from "../types";
+import { Channel, SidebarState, UserAttr, UserPublic } from "../types";
 import { ModalUsers } from "./ModalUsers";
 import { ModalCreateChat } from "./ModalCreateChat";
 import { createChatroom } from "../services/chatRoomService";
@@ -12,7 +12,7 @@ interface SidebarProps {
   activeTab: SidebarState["activeTab"];
   setActiveTab: (tab: SidebarState["activeTab"]) => void;
   channels: Channel[];
-  users: unknown[];
+  users: UserPublic[];
   onChannelSelect: (channel: Channel) => void;
 }
 

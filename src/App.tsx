@@ -4,10 +4,12 @@ import { PrivateRoute } from './components/PrivateRoute';
 import { Chat } from './components/Chat';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <AuthProvider>
+      <Toaster position='top-center' />
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />

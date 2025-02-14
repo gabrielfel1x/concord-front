@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
-import { UserPublic } from "../types";
+import { AuthResponse, UserPublic } from "../types";
 import { login as loginService, register as registerService } from "../services/authService";
 import toast from "react-hot-toast";
 
@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const storageUser = async (userData: any) => {
+  const storageUser = async (userData: AuthResponse) => {
     localStorage.setItem("authToken", userData.token);
     localStorage.setItem("user", JSON.stringify(userData.user));
     setUser(userData.user);
@@ -61,6 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
     setUser(null);
+    toast.success("logged out!")
   };  
 
   const value = {
