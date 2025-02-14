@@ -31,9 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     try {
       const userData = await loginService({ email, password });
-      localStorage.setItem("authToken", userData.token);
-      localStorage.setItem("user", JSON.stringify(userData.user));
-      setUser(userData.user);
+      await storageUser(userData);
       toast.success("Login successful! 🎉");
     } catch (error) {
       console.error("Erro ao logar:", error);
@@ -42,15 +40,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const storageUser = async (userData: any) => {
+    localStorage.setItem("authToken", userData.token);
+    localStorage.setItem("user", JSON.stringify(userData.user));
+    setUser(userData.user);
+  }
+
   const register = async (name: string, email: string, password: string) => {
     try {
-      await registerService({ name, email, password, password_confirmation: password });
-      await login(email, password);
+      const userData = await registerService({ name, email, password, password_confirmation: password });
+      await storageUser(userData);
       toast.success("Account created successfully! 🎉");
     } catch (err) {
       console.error("Erro ao registrar:", err);
       toast.error("Failed to register. Please try again.");
-      throw new Error("Erro ao registrar");
     }
   };
 
