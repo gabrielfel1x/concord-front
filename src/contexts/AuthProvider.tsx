@@ -6,23 +6,30 @@ import toast from "react-hot-toast";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserPublic | null>(null);
+  const [userID, setUserID] = useState<number | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
+
 
   useEffect(() => {
     try {
       const token = localStorage.getItem("authToken");
       const storedUser = localStorage.getItem("user");
+      const storedUserID = localStorage.getItem("userID");
   
       if (!token || !storedUser || storedUser === "undefined") {
         localStorage.removeItem("authToken");
         localStorage.removeItem("user");
+        localStorage.removeItem("userID");
         setUser(null);
+        setUserID(undefined);
       } else {
         setUser(JSON.parse(storedUser));
+        setUserID(storedUserID ? JSON.parse(storedUserID) : undefined);
       }
     } catch (error) {
       console.error("Erro ao recuperar usuário do localStorage:", error);
       setUser(null);
+      setUserID(undefined);
     } finally {
       setIsLoading(false);
     }
@@ -43,7 +50,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const storageUser = async (userData: AuthResponse) => {
     localStorage.setItem("authToken", userData.token);
     localStorage.setItem("user", JSON.stringify(userData.user));
+    localStorage.setItem("userID", JSON.stringify(userData.id))
     setUser(userData.user);
+    setUserID(userData.id)
   }
 
   const register = async (name: string, email: string, password: string) => {
@@ -65,6 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };  
 
   const value = {
+    userID,
     user,
     isAuthenticated: !!user,
     login,

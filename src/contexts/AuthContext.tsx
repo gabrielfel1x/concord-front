@@ -2,6 +2,7 @@ import { createContext } from "react";
 import { UserPublic } from "../types";
 
 interface AuthContextType {
+  userID: number | undefined;
   user: UserPublic | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;

@@ -14,12 +14,13 @@ export interface Chatroom {
 export interface UserAttr {
   id: string;
   attributes: {
+    id?: string;
     name: string;
     email: string;
   };
 }
 export interface User {
-  id?: string;
+  id?: number;
 	name: string;
 	email: string;
 	password: string;
@@ -36,6 +37,7 @@ export type LoginCredentials = Pick<User, 'email' | 'password'>
 export type ObjectUserLogin = { user: LoginCredentials }
 
 export interface AuthResponse {
+  id?: number | undefined;
   user: UserPublic;
   token: string;
 }

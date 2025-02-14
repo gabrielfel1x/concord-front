@@ -1,24 +1,23 @@
 import React, { useState } from "react";
 import { X, Plus } from "lucide-react";
-import { Channel, SidebarState, UserAttr, UserPublic } from "../types";
+import { SidebarState, UserAttr } from "../types";
 import { ModalUsers } from "./ModalUsers";
 import { ModalCreateChat } from "./ModalCreateChat";
 import { createChatroom } from "../services/chatRoomService";
 import toast from "react-hot-toast";
+import useUserChannel from "../hooks/useUserChannel";
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   activeTab: SidebarState["activeTab"];
   setActiveTab: (tab: SidebarState["activeTab"]) => void;
-  channels: Channel[];
-  users: UserPublic[];
-  onChannelSelect: (channel: Channel) => void;
+  userId: number | undefined;
+  onChannelSelect: (channel: { id: string; name: string }) => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = (props) => {
-  const { isOpen, onClose, channels, onChannelSelect } = props;
-
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, userId, onChannelSelect }) => {
+  const chatRooms = useUserChannel(userId);
   const [isModalUsersOpen, setIsModalUsersOpen] = useState(false);
   const [isModalChatOpen, setIsModalChatOpen] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<UserAttr[]>([]);
@@ -61,15 +60,15 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
         <div className="p-4">
           <div className="space-y-2">
             <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
-              Channels
+              Chat Rooms
             </h3>
-            {channels.map((channel) => (
+            {chatRooms.map((room) => (
               <button
-                key={channel.id}
-                onClick={() => onChannelSelect(channel)}
+                key={room.id}
+                onClick={() => onChannelSelect(room)}
                 className="cursor-pointer w-full text-left px-2 py-1 rounded hover:bg-zinc-700/50 text-zinc-300 hover:text-zinc-100 transition-colors"
               >
-                # {channel.name}
+                # {room.name}
               </button>
             ))}
           </div>

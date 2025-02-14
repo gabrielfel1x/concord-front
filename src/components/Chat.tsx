@@ -6,13 +6,13 @@ import { ChatInput } from './ChatInput';
 import { Sidebar } from './Sidebar';
 import { Modal } from './Modal';
 import { useAuth } from '../hooks/useAuth';
-import { channels, users } from '../mockData';
+import { channels } from '../mockData';
 import type { Message, SidebarState, Channel } from '../types';
 import { UserAvatar } from './UserAvatar';
 import { getRandomColor } from '../hooks/getRandomColor';
 
 export function Chat() {
-  const { user, logout } = useAuth();
+  const { user, logout, userID } = useAuth();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>(channels[0].messages);
   const [currentChannel, setCurrentChannel] = useState<Channel | null>(channels[0]);
@@ -69,8 +69,7 @@ export function Chat() {
         onClose={() => setSidebarState({ ...sidebarState, isOpen: false })}
         activeTab={sidebarState.activeTab}
         setActiveTab={(tab) => setSidebarState({ ...sidebarState, activeTab: tab })}
-        channels={channels}
-        users={users.filter((u) => u.id !== user?.id)}
+        userId={userID}
         onChannelSelect={handleChannelSelect}
       />
 
