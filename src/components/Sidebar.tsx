@@ -6,6 +6,7 @@ import { ModalCreateChat } from "./ModalCreateChat";
 import { createChatroom } from "../services/chatRoomService";
 import toast from "react-hot-toast";
 import useUserChannel from "../hooks/useUserChannel";
+import { Channel } from "../types";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -13,10 +14,17 @@ interface SidebarProps {
   activeTab: SidebarState["activeTab"];
   setActiveTab: (tab: SidebarState["activeTab"]) => void;
   userId: number | undefined;
-  onChannelSelect: (channel: { id: string; name: string }) => void;
+  onChannelSelect: (channel: Channel) => void;
+  currentChannel: Channel | null;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, userId, onChannelSelect }) => {
+export const Sidebar: React.FC<SidebarProps> = ({
+  isOpen,
+  onClose,
+  userId,
+  onChannelSelect,
+  currentChannel
+}) => {
   const chatRooms = useUserChannel(userId);
   const [isModalUsersOpen, setIsModalUsersOpen] = useState(false);
   const [isModalChatOpen, setIsModalChatOpen] = useState(false);
@@ -65,8 +73,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, userId, onCha
             {chatRooms.map((room) => (
               <button
                 key={room.id}
-                onClick={() => onChannelSelect(room)}
-                className="cursor-pointer w-full text-left px-2 py-1 rounded hover:bg-zinc-700/50 text-zinc-300 hover:text-zinc-100 transition-colors"
+                onClick={() => onChannelSelect({ id: room.id, name: room.name, messages: [] })}
+                className={`cursor-pointer w-full text-left px-2 py-1 rounded transition-colors ${
+                  room.id === currentChannel?.id 
+                    ? "bg-zinc-700 text-white"
+                    : "hover:bg-zinc-700/50 text-zinc-300 hover:text-zinc-100"
+                }`}
               >
                 # {room.name}
               </button>

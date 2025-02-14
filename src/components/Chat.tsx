@@ -10,11 +10,12 @@ import { channels } from '../mockData';
 import type { Message, SidebarState, Channel } from '../types';
 import { UserAvatar } from './UserAvatar';
 import { getRandomColor } from '../hooks/getRandomColor';
+import cable from '../services/cable';
 
 export function Chat() {
   const { user, logout, userID } = useAuth();
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Message[]>(channels[0].messages);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [currentChannel, setCurrentChannel] = useState<Channel | null>(channels[0]);
   const [sidebarState, setSidebarState] = useState<SidebarState>({
     isOpen: false,
@@ -23,6 +24,28 @@ export function Chat() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!currentChannel) return;
+  
+    const subscription = cable.subscriptions.create(
+      { channel: "ChatRoomChannel", chat_room_id: currentChannel.id },
+      {
+        received: (data) => {
+          console.log("Nova mensagem recebida:", data);
+          if (data.type === "new_message") {
+            setMessages((prevMessages) => [...prevMessages, data.message]);
+          }
+        },
+        connected: () => console.log(`Conectado ao chat ${currentChannel.id}`),
+        disconnected: () => console.log(`Desconectado do chat ${currentChannel.id}`),
+      }
+    );
+  
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [currentChannel]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -52,7 +75,7 @@ export function Chat() {
 
   const handleChannelSelect = (channel: Channel) => {
     setCurrentChannel(channel);
-    setMessages(channel.messages);
+    setMessages([]);
     setSidebarState({ ...sidebarState, isOpen: false });
   };
 
@@ -71,6 +94,7 @@ export function Chat() {
         setActiveTab={(tab) => setSidebarState({ ...sidebarState, activeTab: tab })}
         userId={userID}
         onChannelSelect={handleChannelSelect}
+        currentChannel={currentChannel}
       />
 
       <div className="flex-1 flex flex-col">

@@ -17,9 +17,6 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser
           alt={message.sender.name}
           className="rounded-full object-cover"
         />
-        {/* {message.sender.online && (
-          <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full ring-2 ring-black"></div>
-        )} */}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2">
