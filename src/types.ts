@@ -5,6 +5,12 @@ export interface Message {
   timestamp: Date;
 }
 
+export interface Chatroom {
+  id: string;
+  name: string;
+  users: UserAttr[];
+  createdAt: string;
+}
 export interface UserAttr {
   id: string;
   attributes: {

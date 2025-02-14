@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
-import { X, Plus } from 'lucide-react';
-import { Channel, SidebarState, UserAttr } from '../types';
-import { ModalUsers } from './ModalUsers';
+import React, { useState } from "react";
+import { X, Plus } from "lucide-react";
+import { Channel, SidebarState, UserAttr } from "../types";
+import { ModalUsers } from "./ModalUsers";
+import { ModalCreateChat } from "./ModalCreateChat";
+import { createChatroom } from "../services/chatRoomService";
+import toast from "react-hot-toast";
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
-  activeTab: SidebarState['activeTab'];
-  setActiveTab: (tab: SidebarState['activeTab']) => void;
+  activeTab: SidebarState["activeTab"];
+  setActiveTab: (tab: SidebarState["activeTab"]) => void;
   channels: Channel[];
   users: unknown[];
   onChannelSelect: (channel: Channel) => void;
@@ -16,11 +19,31 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = (props) => {
   const { isOpen, onClose, channels, onChannelSelect } = props;
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalUsersOpen, setIsModalUsersOpen] = useState(false);
+  const [isModalChatOpen, setIsModalChatOpen] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState<UserAttr[]>([]);
 
-  const handleConfirm = (users: UserAttr[]) => {
-    console.log('Selected users:', users);
-    setIsModalOpen(false);
+  const handleConfirmUsers = (users: UserAttr[]) => {
+    setSelectedUsers(users);
+    setIsModalUsersOpen(false);
+    setIsModalChatOpen(true);
+  };
+
+  const handleConfirmChat = async (name: string) => {
+    const chatroomPromise = createChatroom(name, selectedUsers.map((u) => u.id));
+
+    toast.promise(chatroomPromise, {
+      loading: "creating chatroom...",
+      success: "chat created successfully",
+      error: "error creating chatroom.",
+    });
+
+    try {
+      const newChatroom = await chatroomPromise;
+      console.log("chatroom created:", newChatroom);
+    } catch (error) {
+      console.error("error creating chatroom:", error);
+    }
   };
 
   if (!isOpen) return null;
@@ -52,23 +75,19 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
           </div>
           <div className="mt-4">
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setIsModalUsersOpen(true)}
               className="cursor-pointer flex items-center gap-2 bg-[#34AB70] hover:bg-[#34AB70]/80 px-4 py-2 rounded-md transition-colors w-full"
             >
               <Plus size={20} className="text-white" />
-              <span className="text-white">Add User</span>
+              <span className="text-white">New Chatroom</span>
             </button>
           </div>
         </div>
       </div>
       <div className="flex-1 bg-black/50" onClick={onClose} />
 
-      <ModalUsers
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={handleConfirm}
-        maxUsers={7}
-      />
+      <ModalUsers isOpen={isModalUsersOpen} onClose={() => setIsModalUsersOpen(false)} onConfirm={handleConfirmUsers} maxUsers={7} />
+      <ModalCreateChat isOpen={isModalChatOpen} onClose={() => setIsModalChatOpen(false)} onConfirm={handleConfirmChat} />
     </div>
   );
 };

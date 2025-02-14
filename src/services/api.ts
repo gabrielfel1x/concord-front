@@ -1,18 +1,13 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import axios, { AxiosInstance } from "axios";
 import { API_BASE_URL } from "../constants/api_routes";
 
 export const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
 });
 
-api.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
-    if (config.headers) {
-      config.headers["ngrok-skip-browser-warning"] = "true";
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+const token = localStorage.getItem("authToken");
+if (token) {
+  api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+}
+
+api.defaults.headers.common["ngrok-skip-browser-warning"] = "true";

@@ -1,9 +1,7 @@
-// src/components/ModalUsers.tsx
 import { useState, useEffect } from 'react';
 import { X, Check } from 'lucide-react';
 import { UserAttr } from '../types';
 import { fetchUsers } from '../services/usersService';
-
 interface ModalUsersProps {
   isOpen: boolean;
   onClose: () => void;
@@ -17,6 +15,7 @@ export function ModalUsers({ isOpen, onClose, onConfirm, maxUsers = 7 }: ModalUs
   const [usersGroup, setusersGroup] = useState<UserAttr[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isConfirmDisabled = selectedUsers.length === 0;
 
   useEffect(() => {
     const loadusersGroup = async () => {
@@ -75,7 +74,7 @@ export function ModalUsers({ isOpen, onClose, onConfirm, maxUsers = 7 }: ModalUs
     <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4">
       <div className="bg-[#36393f] rounded-md w-full max-w-md text-white shadow-xl">
         <div className="flex justify-between items-center p-4 border-b border-[#202225]">
-          <h2 className="text-xl font-semibold">Selecionar amigos</h2>
+          <h2 className="text-xl font-semibold">Select users</h2>
           <button 
             onClick={onClose}
             className="hover:text-gray-400 transition-colors cursor-pointer"
@@ -105,11 +104,11 @@ export function ModalUsers({ isOpen, onClose, onConfirm, maxUsers = 7 }: ModalUs
 
           <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
             {isLoading ? (
-              <div className="text-center py-4 text-[#b9bbbe]">Carregando...</div>
+              <div className="text-center py-4 text-[#b9bbbe]">loading...</div>
             ) : error ? (
               <div className="text-center py-4 text-red-400">{error}</div>
             ) : filteredusersGroup.length === 0 ? (
-              <div className="text-center py-4 text-[#b9bbbe]">Nenhum amigo encontrado</div>
+              <div className="text-center py-4 text-[#b9bbbe]">no users found</div>
             ) : (
               filteredusersGroup.map(friend => (
                 <div
@@ -143,13 +142,16 @@ export function ModalUsers({ isOpen, onClose, onConfirm, maxUsers = 7 }: ModalUs
 
         <div className="p-4 border-t border-[#202225] bg-[#2f3136]">
           <button
+            disabled={isConfirmDisabled}
             onClick={() => {
               onConfirm(selectedUsers);
               onClose();
             }}
-            className="cursor-pointer w-full bg-[#34AB70] hover:bg-[#34AB70]/80 text-white rounded-md py-2.5 font-medium transition-colors"
+            className={`cursor-pointer w-full bg-[#34AB70] hover:bg-[#34AB70]/80 text-white rounded-md py-2.5 font-medium transition-colors ${
+              isConfirmDisabled ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
-            Criar grupo privado
+            next
           </button>
         </div>
       </div>
