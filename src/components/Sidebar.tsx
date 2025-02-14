@@ -9,7 +9,7 @@ interface SidebarProps {
   activeTab: SidebarState['activeTab'];
   setActiveTab: (tab: SidebarState['activeTab']) => void;
   channels: Channel[];
-  friends: unknown[];
+  users: unknown[];
   onChannelSelect: (channel: Channel) => void;
 }
 
@@ -18,8 +18,8 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleConfirm = (friends: UserAttr[]) => {
-    console.log('Selected friends:', friends);
+  const handleConfirm = (users: UserAttr[]) => {
+    console.log('Selected users:', users);
     setIsModalOpen(false);
   };
 
@@ -56,7 +56,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
               className="cursor-pointer flex items-center gap-2 bg-[#34AB70] hover:bg-[#34AB70]/80 px-4 py-2 rounded-md transition-colors w-full"
             >
               <Plus size={20} className="text-white" />
-              <span className="text-white">Add Friend</span>
+              <span className="text-white">Add User</span>
             </button>
           </div>
         </div>
@@ -67,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirm}
-        maxFriends={7}
+        maxUsers={7}
       />
     </div>
   );

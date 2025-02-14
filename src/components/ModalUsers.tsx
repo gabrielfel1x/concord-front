@@ -7,63 +7,63 @@ import { fetchUsers } from '../services/usersService';
 interface ModalUsersProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (selectedFriends: UserAttr[]) => void;
-  maxFriends?: number;
+  onConfirm: (selectedUsers: UserAttr[]) => void;
+  maxUsers?: number;
 }
 
-export function ModalUsers({ isOpen, onClose, onConfirm, maxFriends = 7 }: ModalUsersProps) {
-  const [selectedFriends, setSelectedFriends] = useState<UserAttr[]>([]);
+export function ModalUsers({ isOpen, onClose, onConfirm, maxUsers = 7 }: ModalUsersProps) {
+  const [selectedUsers, setSelectedUsers] = useState<UserAttr[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [friends, setFriends] = useState<UserAttr[]>([]);
+  const [usersGroup, setusersGroup] = useState<UserAttr[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadFriends = async () => {
+    const loadusersGroup = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const fetchedFriends = await fetchUsers();
-        setFriends(fetchedFriends);
+        const fetchedusersGroup = await fetchUsers();
+        setusersGroup(fetchedusersGroup);
       } catch (err) {
-        setError('Failed to load friends. Please try again later.');
-        console.error('Error fetching friends:', err);
+        setError('Failed to load usersGroup. Please try again later.');
+        console.error('Error fetching usersGroup:', err);
       } finally {
         setIsLoading(false);
       }
     };
 
     if (isOpen) {
-      loadFriends();
+      loadusersGroup();
     }
   }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const toggleFriendSelection = (friend: UserAttr) => {
-    setSelectedFriends(prev => {
+  const toggleusersGroupelection = (friend: UserAttr) => {
+    setSelectedUsers(prev => {
       const isSelected = prev.some(f => f.id === friend.id);
       if (isSelected) {
         return prev.filter(f => f.id !== friend.id);
       }
-      if (prev.length >= maxFriends) return prev;
+      if (prev.length >= maxUsers) return prev;
       return [...prev, friend];
     });
   };
 
-  const filteredFriends = friends.filter(friend =>
+  const filteredusersGroup = usersGroup.filter(friend =>
     friend.attributes.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     friend.attributes.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const selectedFriendChips = selectedFriends.map(friend => (
+  const selectedFriendChips = selectedUsers.map(friend => (
     <div
       key={friend.id}
       className="flex items-center gap-1 bg-[#4f545c] text-white px-2 py-1 rounded-full text-sm"
     >
       {friend.attributes.name}
       <button
-        onClick={() => toggleFriendSelection(friend)}
+        onClick={() => toggleusersGroupelection(friend)}
         className="hover:text-gray-300 cursor-pointer"
       >
         <X size={14} />
@@ -86,7 +86,7 @@ export function ModalUsers({ isOpen, onClose, onConfirm, maxFriends = 7 }: Modal
 
         <div className="p-4">
           <p className="text-[#b9bbbe] text-sm mb-4">
-            Você pode adicionar mais {maxFriends - selectedFriends.length} amigos.
+            Você pode adicionar mais {maxUsers - selectedUsers.length} amigos.
           </p>
           
           <div className="flex flex-wrap gap-2 mb-4">
@@ -108,14 +108,14 @@ export function ModalUsers({ isOpen, onClose, onConfirm, maxFriends = 7 }: Modal
               <div className="text-center py-4 text-[#b9bbbe]">Carregando...</div>
             ) : error ? (
               <div className="text-center py-4 text-red-400">{error}</div>
-            ) : filteredFriends.length === 0 ? (
+            ) : filteredusersGroup.length === 0 ? (
               <div className="text-center py-4 text-[#b9bbbe]">Nenhum amigo encontrado</div>
             ) : (
-              filteredFriends.map(friend => (
+              filteredusersGroup.map(friend => (
                 <div
                   key={friend.id}
                   className="flex items-center justify-between p-2 hover:bg-[#32353b] rounded-md cursor-pointer transition-colors"
-                  onClick={() => toggleFriendSelection(friend)}
+                  onClick={() => toggleusersGroupelection(friend)}
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-[#34AB70] flex items-center justify-center">
@@ -129,9 +129,9 @@ export function ModalUsers({ isOpen, onClose, onConfirm, maxFriends = 7 }: Modal
                     </div>
                   </div>
                   <div className={`w-6 h-6 rounded-md border border-[#72767d] flex items-center justify-center ${
-                    selectedFriends.some(f => f.id === friend.id) ? 'bg-[#34AB70] border-[#34AB70]/80' : ''
+                    selectedUsers.some(f => f.id === friend.id) ? 'bg-[#34AB70] border-[#34AB70]/80' : ''
                   }`}>
-                    {selectedFriends.some(f => f.id === friend.id) && (
+                    {selectedUsers.some(f => f.id === friend.id) && (
                       <Check size={16} className="text-white" />
                     )}
                   </div>
@@ -144,7 +144,7 @@ export function ModalUsers({ isOpen, onClose, onConfirm, maxFriends = 7 }: Modal
         <div className="p-4 border-t border-[#202225] bg-[#2f3136]">
           <button
             onClick={() => {
-              onConfirm(selectedFriends);
+              onConfirm(selectedUsers);
               onClose();
             }}
             className="cursor-pointer w-full bg-[#34AB70] hover:bg-[#34AB70]/80 text-white rounded-md py-2.5 font-medium transition-colors"
