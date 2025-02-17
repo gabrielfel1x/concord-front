@@ -5,6 +5,13 @@ export interface Message {
   timestamp: Date;
 }
 
+export interface WebSocketMessage {
+  content: string;
+  user: {
+    email: string;
+    name: string;
+  };
+}
 export interface Chatroom {
   id: string;
   name: string;
@@ -17,6 +24,7 @@ export interface UserAttr {
     id?: string;
     name: string;
     email: string;
+    messages: string[];
   };
 }
 export interface User {

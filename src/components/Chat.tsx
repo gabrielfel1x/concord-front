@@ -62,15 +62,13 @@ export function Chat() {
   };
 
   const handleSendMessage = (content: string) => {
-    if (!user) return;
-    
-    const newMessage: Message = {
-      id: String(Date.now()),
-      content,
-      sender: user,
-      timestamp: new Date(),
-    };
-    setMessages([...messages, newMessage]);
+    if (!user || !currentChannel) return;
+  
+    cable.subscriptions.subscriptions.forEach((sub) => {
+      if (sub.identifier.includes(`"chat_room_id":${currentChannel.id}`)) {
+        sub.send({ type: "send_message", content });
+      }
+    });
   };
 
   const handleChannelSelect = (channel: Channel) => {

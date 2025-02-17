@@ -72,16 +72,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </h3>
             {chatRooms.map((room) => (
               <button
-                key={room.id}
-                onClick={() => onChannelSelect({ id: room.id, name: room.name, messages: [] })}
-                className={`cursor-pointer w-full text-left px-2 py-1 rounded transition-colors ${
-                  room.id === currentChannel?.id 
-                    ? "bg-zinc-700 text-white"
-                    : "hover:bg-zinc-700/50 text-zinc-300 hover:text-zinc-100"
-                }`}
-              >
-                # {room.name}
-              </button>
+              key={room.id}
+              onClick={() => onChannelSelect({ id: room.id, name: room.name, messages: room.messages })}
+              className={`cursor-pointer w-full text-left px-2 py-1 rounded transition-colors ${
+                room.id === currentChannel?.id 
+                  ? "bg-zinc-700 text-white"
+                  : "hover:bg-zinc-700/50 text-zinc-300 hover:text-zinc-100"
+              }`}
+            >
+              # {room.name}
+            </button>
             ))}
           </div>
           <div className="mt-4">
