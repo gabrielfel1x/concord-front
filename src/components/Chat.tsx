@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Menu, Users, Hash, Home, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ChatMessage } from './ChatMessage';
@@ -9,7 +9,6 @@ import { useAuth } from '../hooks/useAuth';
 import { useGeneral } from '../hooks/useGeneral';
 import type { SidebarState, Message } from '../types';
 import { UserAvatar } from './UserAvatar';
-import { getRandomColor } from '../hooks/getRandomColor';
 import { createMessage } from '../services/messageService';
 
 export function Chat() {
@@ -47,7 +46,8 @@ export function Chat() {
     setSidebarState({ ...sidebarState, isOpen: false });
   };
 
-  const userColor = useMemo(getRandomColor, []);
+  const userColor = user?.color;
+  console.log(userColor)
 
   return (
     <div className="min-h-screen bg-[#18181B] text-[#9D9DA7] flex">

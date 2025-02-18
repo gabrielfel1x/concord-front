@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserPublic | null>(null);
+  const [color, setColor] = useState<string | undefined>(undefined);
   const [userID, setUserID] = useState<number | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
@@ -15,6 +16,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const token = localStorage.getItem("authToken");
       const storedUser = localStorage.getItem("user");
       const storedUserID = localStorage.getItem("userID");
+      setColor(user?.color)
   
       if (!token || !storedUser || storedUser === "undefined") {
         localStorage.removeItem("authToken");
@@ -57,9 +59,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUserID(userData.id)
   }
 
-  const register = async (name: string, email: string, password: string) => {
+  const register = async (name: string, email: string, password: string, password_confirmation: string, color: string) => {
     try {
-      const userData = await registerService({ name, email, password, password_confirmation: password });
+      password_confirmation = password
+      const userData = await registerService({ name, email, password, password_confirmation, color });
       await storageUser(userData);
       toast.success("Account created successfully! 🎉");
     } catch (err) {
@@ -79,6 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = {
     userID,
     user,
+    color,
     token,
     isAuthenticated: !!user,
     login,
