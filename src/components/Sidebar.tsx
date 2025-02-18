@@ -12,7 +12,7 @@ interface SidebarProps {
   onClose: () => void;
   activeTab: SidebarState["activeTab"];
   setActiveTab: (tab: SidebarState["activeTab"]) => void;
-  onChannelSelect: (channel: Channel) => void;
+  onChannelSelect: (position: number) => void;
   currentChannel: Channel | null;
 }
 
@@ -61,18 +61,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
               Chat Rooms
             </h3>
-            {chatRooms.map((room) => (
+            {chatRooms.map((room, index) => (
               <button
-              key={room.id}
-              onClick={() => onChannelSelect(room)}
-              className={`cursor-pointer w-full text-left px-2 py-1 rounded transition-colors ${
-                room.id === currentChannel?.id 
-                  ? "bg-zinc-700 text-white"
-                  : "hover:bg-zinc-700/50 text-zinc-300 hover:text-zinc-100"
-              }`}
-            >
-              # {room.attributes.name}
-            </button>
+                key={room.id}
+                onClick={() => onChannelSelect(index)}
+                className={`cursor-pointer w-full text-left px-2 py-1 rounded transition-colors ${
+                  room.id === currentChannel?.id 
+                    ? "bg-zinc-700 text-white"
+                    : "hover:bg-zinc-700/50 text-zinc-300 hover:text-zinc-100"
+                }`}
+              >
+                # {room.attributes.name}
+              </button>
             ))}
           </div>
           <div className="mt-4">

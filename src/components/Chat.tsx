@@ -6,27 +6,30 @@ import { ChatInput } from './ChatInput';
 import { Sidebar } from './Sidebar';
 import { Modal } from './Modal';
 import { useAuth } from '../hooks/useAuth';
-import type { SidebarState, Channel } from '../types';
+import { useGeneral } from '../hooks/useGeneral';
+import type { SidebarState, Message } from '../types';
 import { UserAvatar } from './UserAvatar';
 import { getRandomColor } from '../hooks/getRandomColor';
+import { createMessage } from '../services/messageService';
 
 export function Chat() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [currentChannel, setCurrentChannel] = useState<Channel | null>(null);
+  const [currentChannelIndex, setCurrentChannelIndex] = useState<number | null>(null);
   const [sidebarState, setSidebarState] = useState<SidebarState>({
     isOpen: false,
     activeTab: 'channels',
   });
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { chatRooms } = useGeneral();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [currentChannel]);
+  }, [currentChannelIndex]);
 
   const homeReturn = () => {
-    setCurrentChannel(null);
+    setCurrentChannelIndex(null);
   };
 
   const handleLogout = () => {
@@ -34,14 +37,13 @@ export function Chat() {
     navigate('/login');
   };
 
-  const handleSendMessage = (content: string) => {
-    if (!user || !currentChannel) return;
-  
-    console.log('Sending message:', content);
+  const handleSendMessage = async (content: string) => {
+    if (!user || !currentChannelIndex) return;
+    await createMessage(content, chatRooms[currentChannelIndex].id);
   };
 
-  const handleChannelSelect = (channel: Channel) => {
-    setCurrentChannel(channel);
+  const handleChannelSelect = (position: number) => {
+    setCurrentChannelIndex(position);
     setSidebarState({ ...sidebarState, isOpen: false });
   };
 
@@ -55,7 +57,7 @@ export function Chat() {
         activeTab={sidebarState.activeTab}
         setActiveTab={(tab) => setSidebarState({ ...sidebarState, activeTab: tab })}
         onChannelSelect={handleChannelSelect}
-        currentChannel={currentChannel}
+        currentChannel={currentChannelIndex !== null ? chatRooms[currentChannelIndex] : null}
       />
 
       <div className="flex-1 flex flex-col">
@@ -68,8 +70,8 @@ export function Chat() {
               <Menu size={20} className="text-[#9D9DA7] hover:text-white/80" />
             </button>
             <div className="flex flex-row items-center justify-center gap-2">
-              {currentChannel && <Hash size={20} className="text-[#9D9DA7]" />}
-              <h1 className="font-semibold">{currentChannel?.attributes?.name}</h1>
+              {currentChannelIndex && <Hash size={20} className="text-[#9D9DA7]" />}
+              <h1 className="font-semibold">{currentChannelIndex ? chatRooms[currentChannelIndex].attributes.name : 'Concord'}</h1>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -91,12 +93,12 @@ export function Chat() {
           </div>
         </header>
 
-        {currentChannel ? (
+        {currentChannelIndex ? (
           <>
             <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[#202022] scrollbar-track-transparent flex flex-col-reverse mb-24">
               <div ref={messagesEndRef} />
               <div className="py-4 flex flex-col gap-4">
-                {currentChannel?.attributes?.messages.map((message) => (
+                {chatRooms[currentChannelIndex]?.attributes?.messages.map((message: Message) => (
                   <ChatMessage
                     key={message.id}
                     message={message}
@@ -105,7 +107,7 @@ export function Chat() {
                 ))}
               </div>
             </div>
-            <ChatInput onSendMessage={handleSendMessage} groupName={currentChannel.attributes.name} />
+            <ChatInput onSendMessage={handleSendMessage} groupName={chatRooms[currentChannelIndex].attributes.name} />
           </>
         ) : (
           <div className="flex-1 bg-[#18181B]" />
