@@ -9,7 +9,12 @@ export const GeneralProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const { userID } = useAuth();
 
   const addNewGroup = (newGroup: any) => {
-    toast.success("Você foi adicionado ao grupo: " + newGroup.attributes.name);
+    if (newGroup.attributes.members.find((member: any) => member.role === "admin").user.id === userID) {
+      toast.success("Grupo criado com sucesso!")
+    } else {
+      toast.success("Você foi adicionado ao grupo: " + newGroup.attributes.name);
+    }
+
     setChatRooms((prev) => [...prev, newGroup]);
   };
 

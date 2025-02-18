@@ -15,7 +15,12 @@ const useUserChannel = (userId: number | undefined, setChatRooms: any, addNewGro
           }
 
           if (data.type === "new_chat_room") {
+            console.log(data.chat_room.data);
             addNewGroup(data.chat_room.data);
+          }
+
+          if (data.type === "new_message") {
+            console.log(data.message.data);
           }
         },
         connected: () => console.log("Conectado ao UserChannel"),
