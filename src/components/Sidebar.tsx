@@ -4,7 +4,6 @@ import { SidebarState, UserAttr } from "../types";
 import { ModalUsers } from "./ModalUsers";
 import { ModalCreateChat } from "./ModalCreateChat";
 import { createChatroom } from "../services/chatRoomService";
-import toast from "react-hot-toast";
 import { Channel } from "../types";
 import { useGeneral } from "../hooks/useGeneral";
 
@@ -36,12 +35,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const handleConfirmChat = async (name: string) => {
     const chatroomPromise = createChatroom(name, selectedUsers.map((u) => u.id));
-
-    toast.promise(chatroomPromise, {
-      loading: "creating chatroom...",
-      success: "chat created successfully",
-      error: "error creating chatroom.",
-    });
 
     try {
       const newChatroom = await chatroomPromise;

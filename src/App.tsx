@@ -10,31 +10,24 @@ import { Toaster } from 'react-hot-toast';
 function App() {
   return (
     <AuthProvider>
+      <GeneralProvider>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/chat"
+              element={
+                <PrivateRoute>
+                  <Chat />
+                </PrivateRoute>
+              }
+            />
+            <Route path="/" element={<Navigate to="/chat" replace />} />
+          </Routes>
+        </Router>
+      </GeneralProvider>
       <Toaster position='top-center' />
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/*"
-            element={
-              <GeneralProvider>
-                <Routes>
-                  <Route
-                    path="/chat"
-                    element={
-                      <PrivateRoute>
-                        <Chat />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route path="/" element={<Navigate to="/chat" replace />} />
-                </Routes>
-              </GeneralProvider>
-            }
-          />
-        </Routes>
-      </Router>
     </AuthProvider>
   );
 }

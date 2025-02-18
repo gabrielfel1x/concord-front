@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import cable from "../services/cable";
 
-const useUserChannel = (userId: number | undefined, setChatRooms: any) => {
+const useUserChannel = (userId: number | undefined, setChatRooms: any, addNewGroup: any) => {
   useEffect(() => {
     if (!userId) return;
 
@@ -13,6 +13,10 @@ const useUserChannel = (userId: number | undefined, setChatRooms: any) => {
 
           if (data.type === "initial_data" && data.chat_rooms) {
             setChatRooms(data.chat_rooms.data);
+          }
+
+          if (data.type === "new_chat_room") {
+            addNewGroup(data.chat_room.data);
           }
         },
         connected: () => console.log("Conectado ao UserChannel"),
