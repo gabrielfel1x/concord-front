@@ -13,7 +13,6 @@ export const GeneralProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setChatRooms((prev) => [...prev, newGroup]);
   };
 
-  // 🔹 Só chama o hook se userID estiver definido
   useUserChannel(userID || undefined, setChatRooms, addNewGroup);
 
   const value = { chatRooms, setChatRooms };

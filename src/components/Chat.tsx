@@ -6,45 +6,21 @@ import { ChatInput } from './ChatInput';
 import { Sidebar } from './Sidebar';
 import { Modal } from './Modal';
 import { useAuth } from '../hooks/useAuth';
-import { channels } from '../mockData';
 import type { Message, SidebarState, Channel } from '../types';
 import { UserAvatar } from './UserAvatar';
 import { getRandomColor } from '../hooks/getRandomColor';
-import cable from '../services/cable';
 
 export function Chat() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [currentChannel, setCurrentChannel] = useState<Channel | null>(channels[0]);
+  const [currentChannel, setCurrentChannel] = useState<Channel | null>(null);
   const [sidebarState, setSidebarState] = useState<SidebarState>({
     isOpen: false,
     activeTab: 'channels',
   });
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!currentChannel) return;
-  
-    const subscription = cable.subscriptions.create(
-      { channel: "ChatRoomChannel", chat_room_id: currentChannel.id },
-      {
-        received: (data) => {
-          console.log("Nova mensagem recebida:", data);
-          if (data.type === "new_message") {
-            setMessages((prevMessages) => [...prevMessages, data.message]);
-          }
-        },
-        connected: () => console.log(`Conectado ao chat ${currentChannel.id}`),
-        disconnected: () => console.log(`Desconectado do chat ${currentChannel.id}`),
-      }
-    );
-  
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [currentChannel]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -63,11 +39,7 @@ export function Chat() {
   const handleSendMessage = (content: string) => {
     if (!user || !currentChannel) return;
   
-    cable.subscriptions.subscriptions.forEach((sub) => {
-      if (sub.identifier.includes(`"chat_room_id":${currentChannel.id}`)) {
-        sub.send({ type: "send_message", content });
-      }
-    });
+    console.log('Sending message:', content);
   };
 
   const handleChannelSelect = (channel: Channel) => {
@@ -136,7 +108,7 @@ export function Chat() {
                 ))}
               </div>
             </div>
-            <ChatInput onSendMessage={handleSendMessage} />
+            <ChatInput onSendMessage={handleSendMessage} groupName={currentChannel.name} />
           </>
         ) : (
           <div className="flex-1 bg-[#18181B]" />
