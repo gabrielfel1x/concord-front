@@ -5,7 +5,6 @@ import { ModalUsers } from "./ModalUsers";
 import { ModalCreateChat } from "./ModalCreateChat";
 import { createChatroom } from "../services/chatRoomService";
 import toast from "react-hot-toast";
-import useUserChannel from "../hooks/useUserChannel";
 import { Channel } from "../types";
 
 interface SidebarProps {
@@ -13,7 +12,6 @@ interface SidebarProps {
   onClose: () => void;
   activeTab: SidebarState["activeTab"];
   setActiveTab: (tab: SidebarState["activeTab"]) => void;
-  userId: number | undefined;
   onChannelSelect: (channel: Channel) => void;
   currentChannel: Channel | null;
 }
@@ -21,11 +19,10 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onClose,
-  userId,
   onChannelSelect,
   currentChannel
 }) => {
-  const chatRooms = useUserChannel(userId);
+  const chatRooms = []
   const [isModalUsersOpen, setIsModalUsersOpen] = useState(false);
   const [isModalChatOpen, setIsModalChatOpen] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<UserAttr[]>([]);

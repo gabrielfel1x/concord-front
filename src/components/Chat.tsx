@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Menu, Users, Bell, Hash, Home, Inbox, HelpCircle, Search, LogOut } from 'lucide-react';
+import { Menu, Users, Hash, Home, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
@@ -13,7 +13,7 @@ import { getRandomColor } from '../hooks/getRandomColor';
 import cable from '../services/cable';
 
 export function Chat() {
-  const { user, logout, userID } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentChannel, setCurrentChannel] = useState<Channel | null>(channels[0]);
@@ -85,7 +85,6 @@ export function Chat() {
         onClose={() => setSidebarState({ ...sidebarState, isOpen: false })}
         activeTab={sidebarState.activeTab}
         setActiveTab={(tab) => setSidebarState({ ...sidebarState, activeTab: tab })}
-        userId={userID}
         onChannelSelect={handleChannelSelect}
         currentChannel={currentChannel}
       />
