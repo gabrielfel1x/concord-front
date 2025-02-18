@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import cable from "../services/cable";
 
-const useUserChannel = (userId: number | undefined) => {
+const useUserChannel = (userId: number | undefined, setChatRooms: any) => {
   useEffect(() => {
     if (!userId) return;
 
@@ -12,6 +12,7 @@ const useUserChannel = (userId: number | undefined) => {
           console.log("Nova mensagem recebida no WebSocket:", data);
 
           if (data.type === "initial_data" && data.chat_rooms) {
+            setChatRooms(data.chat_rooms.data);
           }
         },
         connected: () => console.log("Conectado ao UserChannel"),
