@@ -2,11 +2,17 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { toast } from 'react-hot-toast';
+import { ChromePicker, ColorResult } from 'react-color';
+import { getRandomColor } from '../hooks/getRandomColor';
+import { colors } from '../utils';
 
 export function Register() {
+  const userColor = getRandomColor;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password_confirmation, setpassword_confirmation] = useState('');
+  const [color, setColor] = useState<string>(userColor);
+  const [showColorPicker, setShowColorPicker] = useState(false);
   const [name, setName] = useState('');
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -20,11 +26,19 @@ export function Register() {
     }
 
     try {
-      await register(name, email, password, password_confirmation);
+      await register(name, email, password, password_confirmation, color);
       navigate('/chat');
     } catch (error) {
       console.error("Erro ao registrar:", error);
     }
+  };
+
+  const handleColorChange = (color: ColorResult) => {
+    setColor(color.hex);
+  };
+
+  const handleCloseColorPicker = () => {
+    setShowColorPicker(false);
   };
 
   return (
@@ -109,6 +123,43 @@ export function Register() {
               >
                 Confirm Password
               </label>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
+                style={{ backgroundColor: color }}
+                onClick={() => setShowColorPicker(!showColorPicker)}
+              >
+                <span className="text-white text-sm">{name.charAt(0).toUpperCase()}</span>
+              </div>
+              <label className="text-sm text-zinc-400 transition-all peer-placeholder-shown:top-3 peer-focus:top-2 peer-focus:text-sm peer-focus:text-zinc-300">
+                Choose your favorite color
+              </label>
+              {showColorPicker && (
+                <div className="absolute z-10 mt-2 p-4 bg-[#18181B] rounded-sm shadow-lg">
+                  <div className="grid grid-cols-3 gap-2 mb-4">
+                    {colors.map((stdColor) => (
+                      <div
+                        key={stdColor}
+                        className="w-8 h-8 rounded-full cursor-pointer"
+                        style={{ backgroundColor: stdColor }}
+                        onClick={() => setColor(stdColor)}
+                      />
+                    ))}
+                  </div>
+                  <ChromePicker
+                    color={color}
+                    onChange={handleColorChange}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleCloseColorPicker}
+                    className="mt-4 w-full py-2 px-4 text-sm font-medium text-white bg-[#34AB70] hover:bg-[#34AB70]/80 rounded-sm"
+                  >
+                    Done
+                  </button>
+                </div>
+              )}
             </div>
           </div>
           <div>

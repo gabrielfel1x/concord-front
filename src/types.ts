@@ -31,9 +31,11 @@ export interface User {
 	email: string;
 	password: string;
 	password_confirmation: string;
+  color: string;
 }
 
 export type UserPublic = Omit<User, 'password' | 'password_confirmation'>;
+
 export interface RootObjectUser {
 	user: User;
 }
