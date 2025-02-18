@@ -22,6 +22,7 @@ export interface UserAttr {
     id?: string;
     name: string;
     email: string;
+    color: string;
     messages: string[];
   };
 }
