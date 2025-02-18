@@ -1,17 +1,15 @@
 export interface Message {
   id: string;
   content: string;
-  sender: UserPublic;
-  timestamp: Date;
+  chat_room_id: string;
+  created_at: string;
+  user: {
+    name: string;
+    email: string;
+    id: string;
+  }
 }
 
-export interface WebSocketMessage {
-  content: string;
-  user: {
-    email: string;
-    name: string;
-  };
-}
 export interface Chatroom {
   id: string;
   name: string;
@@ -59,8 +57,10 @@ export interface APIResponse<T> {
 }
 export interface Channel {
   id: string;
-  name: string;
-  messages: Message[];
+  attributes: {
+    name: string;
+    messages: Message[];
+  };
 }
 
 export interface AuthState {

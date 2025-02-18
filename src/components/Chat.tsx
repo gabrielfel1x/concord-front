@@ -6,14 +6,13 @@ import { ChatInput } from './ChatInput';
 import { Sidebar } from './Sidebar';
 import { Modal } from './Modal';
 import { useAuth } from '../hooks/useAuth';
-import type { Message, SidebarState, Channel } from '../types';
+import type { SidebarState, Channel } from '../types';
 import { UserAvatar } from './UserAvatar';
 import { getRandomColor } from '../hooks/getRandomColor';
 
 export function Chat() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Message[]>([]);
   const [currentChannel, setCurrentChannel] = useState<Channel | null>(null);
   const [sidebarState, setSidebarState] = useState<SidebarState>({
     isOpen: false,
@@ -24,11 +23,10 @@ export function Chat() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [currentChannel]);
 
   const homeReturn = () => {
     setCurrentChannel(null);
-    setMessages([]);
   };
 
   const handleLogout = () => {
@@ -44,7 +42,6 @@ export function Chat() {
 
   const handleChannelSelect = (channel: Channel) => {
     setCurrentChannel(channel);
-    setMessages([]);
     setSidebarState({ ...sidebarState, isOpen: false });
   };
 
@@ -72,7 +69,7 @@ export function Chat() {
             </button>
             <div className="flex flex-row items-center justify-center gap-2">
               {currentChannel && <Hash size={20} className="text-[#9D9DA7]" />}
-              <h1 className="font-semibold">{currentChannel?.name}</h1>
+              <h1 className="font-semibold">{currentChannel?.attributes?.name}</h1>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -99,16 +96,16 @@ export function Chat() {
             <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[#202022] scrollbar-track-transparent flex flex-col-reverse mb-24">
               <div ref={messagesEndRef} />
               <div className="py-4 flex flex-col gap-4">
-                {messages.map((message) => (
+                {currentChannel?.attributes?.messages.map((message) => (
                   <ChatMessage
                     key={message.id}
                     message={message}
-                    isCurrentUser={message.sender.id === user?.id}
+                    isCurrentUser={message.user.id === String(user?.id)}
                   />
                 ))}
               </div>
             </div>
-            <ChatInput onSendMessage={handleSendMessage} groupName={currentChannel.name} />
+            <ChatInput onSendMessage={handleSendMessage} groupName={currentChannel.attributes.name} />
           </>
         ) : (
           <div className="flex-1 bg-[#18181B]" />

@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 
 export const GeneralProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [chatRooms, setChatRooms] = useState<any[]>([]);
-  const { userID } = useAuth(); // Obtém o usuário autenticado
+  const { userID } = useAuth();
 
   const addNewGroup = (newGroup: any) => {
     toast.success("Você foi adicionado ao grupo: " + newGroup.attributes.name);
