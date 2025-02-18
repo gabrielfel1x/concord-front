@@ -9,6 +9,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [color, setColor] = useState<string | undefined>(undefined);
   const [userID, setUserID] = useState<number | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -24,6 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null);
         setUserID(undefined);
       } else {
+        setToken(token);
         setUser(JSON.parse(storedUser));
         setUserID(storedUserID ? JSON.parse(storedUserID) : undefined);
       }
@@ -52,6 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("authToken", userData.token);
     localStorage.setItem("user", JSON.stringify(userData.user));
     localStorage.setItem("userID", JSON.stringify(userData.id))
+    setToken(userData.token);
     setUser(userData.user);
     setUserID(userData.id)
   }
@@ -72,6 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
     setUser(null);
+    setToken(null);
     toast.success("logged out!")
   };  
 
@@ -79,6 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     userID,
     user,
     color,
+    token,
     isAuthenticated: !!user,
     login,
     register,

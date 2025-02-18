@@ -1,28 +1,29 @@
-import { useEffect } from "react";
-import cable from "../services/cable";
+import { createCable } from "../services/cable";
 
-const useUserChannel = (userId: number | undefined, setChatRooms: any, addNewGroup: any) => {
-  useEffect(() => {
-    if (!userId) return;
+const useUserChannel = (token: string, setChatRooms: any, addNewGroup: any, addNewMessage: any) => {
+  let cable = createCable(token);
 
-    cable.subscriptions.create(
-      { channel: "UserChannel" },
-      {
-        received: (data) => {
-          if (data.type === "initial_data" && data.chat_rooms) {
-            console.log(data.chat_rooms.data);
-            setChatRooms(data.chat_rooms.data);
-          }
+  cable.subscriptions.create(
+    { channel: "UserChannel" },
+    {
+      received: (data) => {
+        if (data.type === "initial_data" && data.chat_rooms) {
+          setChatRooms(data.chat_rooms.data);
+        }
 
-          if (data.type === "new_chat_room") {
-            addNewGroup(data.chat_room.data);
-          }
-        },
-        connected: () => console.log("Conectado ao UserChannel"),
-        disconnected: () => console.log("Desconectado do UserChannel"),
-      }
-    );
-  }, [userId]);
+        if (data.type === "new_chat_room") {
+          addNewGroup(data.chat_room.data);
+        }
+
+        if (data.type === "new_message") {
+          addNewMessage(data.message.data.attributes);
+        }
+      },
+      connected: () => console.log("Conectado ao UserChannel"),
+      disconnected: () => console.log("Desconectado do UserChannel"),
+    }
+  );
+  return cable;
 };
 
 export default useUserChannel;
