@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 export const GeneralProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [chatRooms, setChatRooms] = useState<any[]>([]);
   const { userID, token } = useAuth();
+  const [cable, setCable] = useState<any | null>(null);
 
   const addNewGroup = (newGroup: any) => {
     if (newGroup.attributes.members.find((member: any) => member.role === "admin").user.id === userID) {
@@ -44,11 +45,23 @@ export const GeneralProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   useEffect(() => {
-    if (!token) return;
-    useUserChannel(token, setChatRooms, addNewGroup, addNewMessage);
+    if (!token) {
+      setCable(null);
+      return;
+    };
+
+    const { cable } = useUserChannel(token, setChatRooms, addNewGroup, addNewMessage);
+    setCable(cable);
+    if (cable) {
+      cable.disconnect();
+    }
+
+    return () => {
+      cable.disconnect();
+    };
   }, [token]);
 
-  const value = { chatRooms, setChatRooms };
+  const value = { chatRooms, setChatRooms, cable };
 
   return <GeneralContext.Provider value={value}>{children}</GeneralContext.Provider>;
 };

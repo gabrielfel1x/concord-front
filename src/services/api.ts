@@ -5,9 +5,12 @@ export const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
 });
 
-const token = localStorage.getItem("authToken");
-if (token) {
-  api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-}
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("authToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
-api.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
+export default api;

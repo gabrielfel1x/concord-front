@@ -4,7 +4,6 @@ import { UserPublic } from "../types";
 interface AuthContextType {
   userID: number | undefined;
   user: UserPublic | null;
-  color: string | undefined;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, password_confirmation: string, color: string) => Promise<void>;

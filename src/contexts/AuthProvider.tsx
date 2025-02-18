@@ -1,48 +1,48 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "./AuthContext";
 import { AuthResponse, UserPublic } from "../types";
 import { login as loginService, register as registerService } from "../services/authService";
 import toast from "react-hot-toast";
+import { GeneralContext } from "./GeneralContext";
+import { api } from "../services/api";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserPublic | null>(null);
-  const [color, setColor] = useState<string | undefined>(undefined);
   const [userID, setUserID] = useState<number | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
+  const { cable } = useContext(GeneralContext);
 
   useEffect(() => {
     try {
-      const token = localStorage.getItem("authToken");
+      const storedToken = localStorage.getItem("authToken");
       const storedUser = localStorage.getItem("user");
       const storedUserID = localStorage.getItem("userID");
-      setColor(user?.color)
   
-      if (!token || !storedUser || storedUser === "undefined") {
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("user");
-        localStorage.removeItem("userID");
-        setUser(null);
-        setUserID(undefined);
-        setToken(null);
+      if (!storedToken || !storedUser || storedUser === "undefined") {
+        logout();
       } else {
-        setToken(token);
+        setToken(storedToken);
         setUser(JSON.parse(storedUser));
         setUserID(storedUserID ? JSON.parse(storedUserID) : undefined);
+        api.defaults.headers.Authorization = `Bearer ${storedToken}`;
       }
     } catch (error) {
       console.error("Erro ao recuperar usuário do localStorage:", error);
-      setUser(null);
-      setUserID(undefined);
+      logout();
     } finally {
       setIsLoading(false);
     }
   }, []);
+  
 
   const login = async (email: string, password: string) => {
     try {
       const userData = await loginService({ email, password });
       await storageUser(userData);
+      api.defaults.headers.Authorization = `Bearer ${userData.token}`;
+      console.log("Token after login:", userData.token);
+      console.log("API headers after login:", api.defaults.headers);
       toast.success("Login successful! 🎉");
     } catch (error) {
       console.error("Erro ao logar:", error);
@@ -75,15 +75,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
+    localStorage.removeItem("userID");
     setUser(null);
+    setUserID(undefined);
     setToken(null);
-    toast.success("logged out!")
-  };  
+    delete api.defaults.headers.Authorization;
+    console.log("Token after logout:", localStorage.getItem("authToken"));
+    console.log("API headers after logout:", api.defaults.headers);
+    toast.success("Logged out!");
+  };
+  
 
   const value = {
     userID,
     user,
-    color,
     token,
     isAuthenticated: !!user,
     login,

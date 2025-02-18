@@ -24,6 +24,11 @@ export function Chat() {
   const { chatRooms } = useGeneral();
 
   useEffect(() => {
+    console.log("Chat Rooms:", chatRooms);
+  })
+  
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [currentChannelIndex]);
 
@@ -36,18 +41,30 @@ export function Chat() {
     navigate('/login');
   };
 
+  // const handleSendMessage = async (content: string) => {
+  //   if (!user || !currentChannelIndex) return;
+  //   await createMessage(content, chatRooms[currentChannelIndex].id);
+  // };
+
   const handleSendMessage = async (content: string) => {
-    if (!user || !currentChannelIndex) return;
-    await createMessage(content, chatRooms[currentChannelIndex].id);
+    if (!user || !currentChannelIndex) {
+      console.error("User or current channel index is missing");
+      return;
+    }
+    try {
+      await createMessage(content, chatRooms[currentChannelIndex].id);
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
   };
 
   const handleChannelSelect = (position: number) => {
+    console.log("Selected channel index:", position); // Log the selected index
     setCurrentChannelIndex(position);
     setSidebarState({ ...sidebarState, isOpen: false });
   };
 
   const userColor = user?.color;
-  console.log(userColor)
 
   return (
     <div className="min-h-screen bg-[#18181B] text-[#9D9DA7] flex">
@@ -93,7 +110,7 @@ export function Chat() {
           </div>
         </header>
 
-        {currentChannelIndex ? (
+        {currentChannelIndex !== null && chatRooms[currentChannelIndex] ? (
           <>
             <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[#202022] scrollbar-track-transparent flex flex-col-reverse mb-24">
               <div ref={messagesEndRef} />

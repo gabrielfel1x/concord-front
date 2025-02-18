@@ -3,11 +3,12 @@ import { createCable } from "../services/cable";
 const useUserChannel = (token: string, setChatRooms: any, addNewGroup: any, addNewMessage: any) => {
   let cable = createCable(token);
 
-  cable.subscriptions.create(
+  const subscription = cable.subscriptions.create(
     { channel: "UserChannel" },
     {
       received: (data) => {
         if (data.type === "initial_data" && data.chat_rooms) {
+          console.log("Initial data received:", data.chat_rooms.data); // Log the initial data
           setChatRooms(data.chat_rooms.data);
         }
 
@@ -23,7 +24,7 @@ const useUserChannel = (token: string, setChatRooms: any, addNewGroup: any, addN
       disconnected: () => console.log("Desconectado do UserChannel"),
     }
   );
-  return cable;
+  return { cable, subscription  };
 };
 
 export default useUserChannel;
