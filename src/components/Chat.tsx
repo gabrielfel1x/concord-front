@@ -21,7 +21,6 @@ export function Chat() {
     isOpen: false,
     activeTab: 'channels',
   });
-  const [searchQuery, setSearchQuery] = useState('');
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -77,10 +76,6 @@ export function Chat() {
     setSidebarState({ ...sidebarState, isOpen: false });
   };
 
-  const filteredMessages = messages.filter((message) =>
-    message.content.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   const userColor = useMemo(getRandomColor, []);
 
   return (
@@ -115,28 +110,9 @@ export function Chat() {
                 <Home size={20} />
               </button>
               <button className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer">
-                <Bell size={20} />
-              </button>
-              <button className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer">
                 <Users size={20} />
               </button>
               <div className="mx-2 h-6 w-px bg-[#202022]"></div>
-              <div className="relative">
-                <Search size={16} className="absolute left-2 top-1/2 -translate-y-1/2 text-[#9D9DA7]" />
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-36 bg-[#202022] text-sm rounded pl-8 pr-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#9D9DA7] placeholder-[#9D9DA7]"
-                />
-              </div>
-              <button className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer">
-                <Inbox size={20} />
-              </button>
-              <button className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer">
-                <HelpCircle size={20} />
-              </button>
               <button
                 onClick={() => setIsUserModalOpen(true)}
                 className="p-2 text-[#9D9DA7] cursor-pointer rounded-sm transition-transform duration-300 ease-in-out hover:scale-110"
@@ -152,7 +128,7 @@ export function Chat() {
             <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[#202022] scrollbar-track-transparent flex flex-col-reverse mb-24">
               <div ref={messagesEndRef} />
               <div className="py-4 flex flex-col gap-4">
-                {filteredMessages.map((message) => (
+                {messages.map((message) => (
                   <ChatMessage
                     key={message.id}
                     message={message}
