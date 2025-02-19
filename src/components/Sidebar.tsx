@@ -4,28 +4,25 @@ import { SidebarState, UserAttr } from "../types";
 import { ModalUsers } from "./ModalUsers";
 import { ModalCreateChat } from "./ModalCreateChat";
 import { createChatroom } from "../services/chatRoomService";
-import toast from "react-hot-toast";
-import useUserChannel from "../hooks/useUserChannel";
 import { Channel } from "../types";
+import { useGeneral } from "../hooks/useGeneral";
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   activeTab: SidebarState["activeTab"];
   setActiveTab: (tab: SidebarState["activeTab"]) => void;
-  userId: number | undefined;
-  onChannelSelect: (channel: Channel) => void;
+  onChannelSelect: (position: number) => void;
   currentChannel: Channel | null;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onClose,
-  userId,
   onChannelSelect,
   currentChannel
 }) => {
-  const chatRooms = useUserChannel(userId);
+  const { chatRooms } = useGeneral();
   const [isModalUsersOpen, setIsModalUsersOpen] = useState(false);
   const [isModalChatOpen, setIsModalChatOpen] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<UserAttr[]>([]);
@@ -39,15 +36,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const handleConfirmChat = async (name: string) => {
     const chatroomPromise = createChatroom(name, selectedUsers.map((u) => u.id));
 
-    toast.promise(chatroomPromise, {
-      loading: "creating chatroom...",
-      success: "chat created successfully",
-      error: "error creating chatroom.",
-    });
-
     try {
-      const newChatroom = await chatroomPromise;
-      console.log("chatroom created:", newChatroom);
+      await chatroomPromise;
     } catch (error) {
       console.error("error creating chatroom:", error);
     }
@@ -70,17 +60,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
               Chat Rooms
             </h3>
-            {chatRooms.map((room) => (
+            {chatRooms.map((room, index) => (
               <button
               key={room.id}
-              onClick={() => onChannelSelect({ id: room.id, name: room.name, messages: room.messages })}
+              onClick={() => {
+                onChannelSelect(index);
+              }}
               className={`cursor-pointer w-full text-left px-2 py-1 rounded transition-colors ${
                 room.id === currentChannel?.id 
                   ? "bg-zinc-700 text-white"
                   : "hover:bg-zinc-700/50 text-zinc-300 hover:text-zinc-100"
               }`}
             >
-              # {room.name}
+              # {room.attributes.name}
             </button>
             ))}
           </div>

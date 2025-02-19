@@ -1,59 +1,37 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
-import { Menu, Users, Bell, Hash, Home, Inbox, HelpCircle, Search, LogOut } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Menu, Users, Hash, Home, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { Sidebar } from './Sidebar';
 import { Modal } from './Modal';
 import { useAuth } from '../hooks/useAuth';
-import { channels } from '../mockData';
-import type { Message, SidebarState, Channel } from '../types';
+import { useGeneral } from '../hooks/useGeneral';
+import type { SidebarState, Message } from '../types';
 import { UserAvatar } from './UserAvatar';
-import { getRandomColor } from '../hooks/getRandomColor';
-import cable from '../services/cable';
+import { createMessage } from '../services/messageService';
+import { ModalUsersList } from './ModalListUsers';
+import ConcordLogo from "../assets/concord.png";
 
 export function Chat() {
-  const { user, logout, userID } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [currentChannel, setCurrentChannel] = useState<Channel | null>(channels[0]);
+  const [currentChannelIndex, setCurrentChannelIndex] = useState<number | null>(null);
   const [sidebarState, setSidebarState] = useState<SidebarState>({
     isOpen: false,
     activeTab: 'channels',
   });
-  const [searchQuery, setSearchQuery] = useState('');
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+  const [isUsersModalOpen, setIsUsersModalOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!currentChannel) return;
-  
-    const subscription = cable.subscriptions.create(
-      { channel: "ChatRoomChannel", chat_room_id: currentChannel.id },
-      {
-        received: (data) => {
-          console.log("Nova mensagem recebida:", data);
-          if (data.type === "new_message") {
-            setMessages((prevMessages) => [...prevMessages, data.message]);
-          }
-        },
-        connected: () => console.log(`Conectado ao chat ${currentChannel.id}`),
-        disconnected: () => console.log(`Desconectado do chat ${currentChannel.id}`),
-      }
-    );
-  
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [currentChannel]);
+  const { chatRooms } = useGeneral();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [currentChannelIndex]);
 
   const homeReturn = () => {
-    setCurrentChannel(null);
-    setMessages([]);
+    setCurrentChannelIndex(null);
   };
 
   const handleLogout = () => {
@@ -61,27 +39,24 @@ export function Chat() {
     navigate('/login');
   };
 
-  const handleSendMessage = (content: string) => {
-    if (!user || !currentChannel) return;
-  
-    cable.subscriptions.subscriptions.forEach((sub) => {
-      if (sub.identifier.includes(`"chat_room_id":${currentChannel.id}`)) {
-        sub.send({ type: "send_message", content });
-      }
-    });
+  const handleSendMessage = async (content: string) => {
+    if (!user || !currentChannelIndex) {
+      console.error("User or current channel index is missing");
+      return;
+    }
+    try {
+      await createMessage(content, chatRooms[currentChannelIndex - 1].id);
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
   };
 
-  const handleChannelSelect = (channel: Channel) => {
-    setCurrentChannel(channel);
-    setMessages([]);
+  const handleChannelSelect = (position: number) => {
+    setCurrentChannelIndex(position + 1);
     setSidebarState({ ...sidebarState, isOpen: false });
   };
 
-  const filteredMessages = messages.filter((message) =>
-    message.content.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const userColor = useMemo(getRandomColor, []);
+  const userColor = user?.color;
 
   return (
     <div className="min-h-screen bg-[#18181B] text-[#9D9DA7] flex">
@@ -90,9 +65,8 @@ export function Chat() {
         onClose={() => setSidebarState({ ...sidebarState, isOpen: false })}
         activeTab={sidebarState.activeTab}
         setActiveTab={(tab) => setSidebarState({ ...sidebarState, activeTab: tab })}
-        userId={userID}
         onChannelSelect={handleChannelSelect}
-        currentChannel={currentChannel}
+        currentChannel={currentChannelIndex !== null ? chatRooms[currentChannelIndex - 1] : null}
       />
 
       <div className="flex-1 flex flex-col">
@@ -105,8 +79,8 @@ export function Chat() {
               <Menu size={20} className="text-[#9D9DA7] hover:text-white/80" />
             </button>
             <div className="flex flex-row items-center justify-center gap-2">
-              {currentChannel && <Hash size={20} className="text-[#9D9DA7]" />}
-              <h1 className="font-semibold">{currentChannel?.name}</h1>
+              {currentChannelIndex && <Hash size={20} className="text-[#9D9DA7]" />}
+              <h1 className="font-semibold">{currentChannelIndex ? chatRooms[currentChannelIndex - 1].attributes.name : 'Concord'}</h1>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -114,29 +88,13 @@ export function Chat() {
               <button className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer" onClick={homeReturn}>
                 <Home size={20} />
               </button>
-              <button className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer">
-                <Bell size={20} />
-              </button>
-              <button className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer">
+              <button
+                onClick={() => setIsUsersModalOpen(true)} 
+                className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer"
+              >
                 <Users size={20} />
               </button>
               <div className="mx-2 h-6 w-px bg-[#202022]"></div>
-              <div className="relative">
-                <Search size={16} className="absolute left-2 top-1/2 -translate-y-1/2 text-[#9D9DA7]" />
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-36 bg-[#202022] text-sm rounded pl-8 pr-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#9D9DA7] placeholder-[#9D9DA7]"
-                />
-              </div>
-              <button className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer">
-                <Inbox size={20} />
-              </button>
-              <button className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer">
-                <HelpCircle size={20} />
-              </button>
               <button
                 onClick={() => setIsUserModalOpen(true)}
                 className="p-2 text-[#9D9DA7] cursor-pointer rounded-sm transition-transform duration-300 ease-in-out hover:scale-110"
@@ -147,24 +105,26 @@ export function Chat() {
           </div>
         </header>
 
-        {currentChannel ? (
+        {currentChannelIndex !== null && chatRooms[currentChannelIndex - 1] ? (
           <>
             <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[#202022] scrollbar-track-transparent flex flex-col-reverse mb-24">
               <div ref={messagesEndRef} />
               <div className="py-4 flex flex-col gap-4">
-                {filteredMessages.map((message) => (
+                {chatRooms[currentChannelIndex - 1]?.attributes?.messages.map((message: Message) => (
                   <ChatMessage
                     key={message.id}
                     message={message}
-                    isCurrentUser={message.sender.id === user?.id}
+                    isCurrentUser={message.user.id === String(user?.id)}
                   />
                 ))}
               </div>
             </div>
-            <ChatInput onSendMessage={handleSendMessage} />
+            <ChatInput onSendMessage={handleSendMessage} groupName={chatRooms[currentChannelIndex - 1].attributes.name} />
           </>
         ) : (
-          <div className="flex-1 bg-[#18181B]" />
+          <div className="flex-1 flex items-center justify-center bg-[#18181B]">
+            <img src={ConcordLogo} alt="Logo" className="w-96 h-96 opacity-10" />
+          </div>
         )}
       </div>
 
@@ -191,6 +151,10 @@ export function Chat() {
           </button>
         </div>
       </Modal>
+      <ModalUsersList
+        isOpen={isUsersModalOpen}
+        onClose={() => setIsUsersModalOpen(false)}
+      />
     </div>
   );
 }

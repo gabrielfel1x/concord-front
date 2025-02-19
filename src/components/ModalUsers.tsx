@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Check } from 'lucide-react';
 import { UserAttr } from '../types';
 import { fetchUsers } from '../services/usersService';
+import { UserAvatar } from './UserAvatar';
 interface ModalUsersProps {
   isOpen: boolean;
   onClose: () => void;
@@ -9,7 +10,7 @@ interface ModalUsersProps {
   maxUsers?: number;
 }
 
-export function ModalUsers({ isOpen, onClose, onConfirm, maxUsers = 7 }: ModalUsersProps) {
+export function ModalUsers({ isOpen, onClose, onConfirm }: ModalUsersProps) {
   const [selectedUsers, setSelectedUsers] = useState<UserAttr[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [usersGroup, setusersGroup] = useState<UserAttr[]>([]);
@@ -39,30 +40,29 @@ export function ModalUsers({ isOpen, onClose, onConfirm, maxUsers = 7 }: ModalUs
 
   if (!isOpen) return null;
 
-  const toggleusersGroupelection = (friend: UserAttr) => {
+  const toggleusersGroupelection = (user: UserAttr) => {
     setSelectedUsers(prev => {
-      const isSelected = prev.some(f => f.id === friend.id);
+      const isSelected = prev.some(f => f.id === user.id);
       if (isSelected) {
-        return prev.filter(f => f.id !== friend.id);
+        return prev.filter(f => f.id !== user.id);
       }
-      if (prev.length >= maxUsers) return prev;
-      return [...prev, friend];
+      return [...prev, user];
     });
   };
 
-  const filteredusersGroup = usersGroup.filter(friend =>
-    friend.attributes.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    friend.attributes.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredusersGroup = usersGroup.filter(user =>
+    user.attributes.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.attributes.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const selectedFriendChips = selectedUsers.map(friend => (
+  const selecteduserChips = selectedUsers.map(user => (
     <div
-      key={friend.id}
+      key={user.id}
       className="flex items-center gap-1 bg-[#4f545c] text-white px-2 py-1 rounded-full text-sm"
     >
-      {friend.attributes.name}
+      {user.attributes.name}
       <button
-        onClick={() => toggleusersGroupelection(friend)}
+        onClick={() => toggleusersGroupelection(user)}
         className="hover:text-gray-300 cursor-pointer"
       >
         <X size={14} />
@@ -85,11 +85,11 @@ export function ModalUsers({ isOpen, onClose, onConfirm, maxUsers = 7 }: ModalUs
 
         <div className="p-4">
           <p className="text-[#b9bbbe] text-sm mb-4">
-            Você pode adicionar mais {maxUsers - selectedUsers.length} amigos.
+            Escolha os usuários que farão parte do seu ChatRoom.
           </p>
           
           <div className="flex flex-wrap gap-2 mb-4">
-            {selectedFriendChips}
+            {selecteduserChips}
           </div>
 
           <div className="relative mb-4">
@@ -110,27 +110,23 @@ export function ModalUsers({ isOpen, onClose, onConfirm, maxUsers = 7 }: ModalUs
             ) : filteredusersGroup.length === 0 ? (
               <div className="text-center py-4 text-[#b9bbbe]">no users found</div>
             ) : (
-              filteredusersGroup.map(friend => (
+              filteredusersGroup.map(user => (
                 <div
-                  key={friend.id}
+                  key={user.id}
                   className="flex items-center justify-between p-2 hover:bg-[#32353b] rounded-md cursor-pointer transition-colors"
-                  onClick={() => toggleusersGroupelection(friend)}
+                  onClick={() => toggleusersGroupelection(user)}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#34AB70] flex items-center justify-center">
-                      <span className="text-lg font-medium">
-                        {friend.attributes.name.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
+                    <UserAvatar name={user.attributes.name} color={user.attributes.color} />
                     <div>
-                      <div className="font-medium">{friend.attributes.name}</div>
-                      <div className="text-[#b9bbbe] text-sm">{friend.attributes.email}</div>
+                      <div className="font-medium">{user.attributes.name}</div>
+                      <div className="text-[#b9bbbe] text-sm">{user.attributes.email}</div>
                     </div>
                   </div>
                   <div className={`w-6 h-6 rounded-md border border-[#72767d] flex items-center justify-center ${
-                    selectedUsers.some(f => f.id === friend.id) ? 'bg-[#34AB70] border-[#34AB70]/80' : ''
+                    selectedUsers.some(f => f.id === user.id) ? 'bg-[#34AB70] border-[#34AB70]/80' : ''
                   }`}>
-                    {selectedUsers.some(f => f.id === friend.id) && (
+                    {selectedUsers.some(f => f.id === user.id) && (
                       <Check size={16} className="text-white" />
                     )}
                   </div>
