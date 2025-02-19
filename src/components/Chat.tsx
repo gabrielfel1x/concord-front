@@ -52,7 +52,7 @@ export function Chat() {
       return;
     }
     try {
-      await createMessage(content, chatRooms[currentChannelIndex].id);
+      await createMessage(content, chatRooms[currentChannelIndex - 1].id);
     } catch (error) {
       console.error("Failed to send message:", error);
     }
@@ -60,7 +60,7 @@ export function Chat() {
 
   const handleChannelSelect = (position: number) => {
     console.log("Selected channel index:", position); // Log the selected index
-    setCurrentChannelIndex(position);
+    setCurrentChannelIndex(position + 1);
     setSidebarState({ ...sidebarState, isOpen: false });
   };
 
@@ -74,7 +74,7 @@ export function Chat() {
         activeTab={sidebarState.activeTab}
         setActiveTab={(tab) => setSidebarState({ ...sidebarState, activeTab: tab })}
         onChannelSelect={handleChannelSelect}
-        currentChannel={currentChannelIndex !== null ? chatRooms[currentChannelIndex] : null}
+        currentChannel={currentChannelIndex !== null ? chatRooms[currentChannelIndex - 1] : null}
       />
 
       <div className="flex-1 flex flex-col">
@@ -88,7 +88,7 @@ export function Chat() {
             </button>
             <div className="flex flex-row items-center justify-center gap-2">
               {currentChannelIndex && <Hash size={20} className="text-[#9D9DA7]" />}
-              <h1 className="font-semibold">{currentChannelIndex ? chatRooms[currentChannelIndex].attributes.name : 'Concord'}</h1>
+              <h1 className="font-semibold">{currentChannelIndex ? chatRooms[currentChannelIndex - 1].attributes.name : 'Concord'}</h1>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -110,12 +110,12 @@ export function Chat() {
           </div>
         </header>
 
-        {currentChannelIndex !== null && chatRooms[currentChannelIndex] ? (
+        {currentChannelIndex !== null && chatRooms[currentChannelIndex - 1] ? (
           <>
             <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[#202022] scrollbar-track-transparent flex flex-col-reverse mb-24">
               <div ref={messagesEndRef} />
               <div className="py-4 flex flex-col gap-4">
-                {chatRooms[currentChannelIndex]?.attributes?.messages.map((message: Message) => (
+                {chatRooms[currentChannelIndex - 1]?.attributes?.messages.map((message: Message) => (
                   <ChatMessage
                     key={message.id}
                     message={message}
@@ -124,7 +124,7 @@ export function Chat() {
                 ))}
               </div>
             </div>
-            <ChatInput onSendMessage={handleSendMessage} groupName={chatRooms[currentChannelIndex].attributes.name} />
+            <ChatInput onSendMessage={handleSendMessage} groupName={chatRooms[currentChannelIndex - 1].attributes.name} />
           </>
         ) : (
           <div className="flex-1 bg-[#18181B]" />
