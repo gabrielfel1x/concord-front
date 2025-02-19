@@ -11,6 +11,7 @@ import type { SidebarState, Message } from '../types';
 import { UserAvatar } from './UserAvatar';
 import { createMessage } from '../services/messageService';
 import { ModalUsersList } from './ModalListUsers';
+import ConcordLogo from "../assets/concord.png";
 
 export function Chat() {
   const { user, logout } = useAuth();
@@ -121,7 +122,9 @@ export function Chat() {
             <ChatInput onSendMessage={handleSendMessage} groupName={chatRooms[currentChannelIndex - 1].attributes.name} />
           </>
         ) : (
-          <div className="flex-1 bg-[#18181B]" />
+          <div className="flex-1 flex items-center justify-center bg-[#18181B]">
+            <img src={ConcordLogo} alt="Logo" className="w-96 h-96 opacity-10" />
+          </div>
         )}
       </div>
 
