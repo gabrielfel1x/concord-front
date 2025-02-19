@@ -25,10 +25,15 @@ export function Chat() {
   const [isUsersModalOpen, setIsUsersModalOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { chatRooms } = useGeneral();
+  const messages = chatRooms[currentChannelIndex - 1]?.attributes.messages;
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [currentChannelIndex]);
+  }, [currentChannelIndex, messages]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages])
 
   const homeReturn = () => {
     setCurrentChannelIndex(null);
