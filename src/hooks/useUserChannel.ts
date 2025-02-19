@@ -8,7 +8,6 @@ const useUserChannel = (token: string, setChatRooms: any, addNewGroup: any, addN
     {
       received: (data) => {
         if (data.type === "initial_data" && data.chat_rooms) {
-          console.log("Initial data received:", data.chat_rooms.data); // Log the initial data
           setChatRooms(data.chat_rooms.data);
         }
 

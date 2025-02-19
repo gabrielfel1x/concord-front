@@ -37,8 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const chatroomPromise = createChatroom(name, selectedUsers.map((u) => u.id));
 
     try {
-      const newChatroom = await chatroomPromise;
-      console.log("chatroom created:", newChatroom);
+      await chatroomPromise;
     } catch (error) {
       console.error("error creating chatroom:", error);
     }
@@ -65,7 +64,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
               key={room.id}
               onClick={() => {
-                console.log("Selected channel index:", index); // Log the selected index
                 onChannelSelect(index);
               }}
               className={`cursor-pointer w-full text-left px-2 py-1 rounded transition-colors ${

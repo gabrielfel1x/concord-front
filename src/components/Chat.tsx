@@ -24,11 +24,6 @@ export function Chat() {
   const { chatRooms } = useGeneral();
 
   useEffect(() => {
-    console.log("Chat Rooms:", chatRooms);
-  })
-  
-
-  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [currentChannelIndex]);
 
@@ -59,7 +54,6 @@ export function Chat() {
   };
 
   const handleChannelSelect = (position: number) => {
-    console.log("Selected channel index:", position); // Log the selected index
     setCurrentChannelIndex(position + 1);
     setSidebarState({ ...sidebarState, isOpen: false });
   };

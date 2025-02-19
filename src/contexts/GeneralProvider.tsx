@@ -22,7 +22,6 @@ export const GeneralProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const addNewMessage = (newMessage: any) => {
     setChatRooms((prev) => {
-      console.log("Mensagens antes da atualização:", prev);
       const filteredRooms = prev.filter((room) => String(room.id) === String(newMessage.chat_room_id));
       
       if (filteredRooms.length === 0) {
