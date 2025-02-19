@@ -10,6 +10,7 @@ import { useGeneral } from '../hooks/useGeneral';
 import type { SidebarState, Message } from '../types';
 import { UserAvatar } from './UserAvatar';
 import { createMessage } from '../services/messageService';
+import { ModalUsersList } from './ModalListUsers';
 
 export function Chat() {
   const { user, logout } = useAuth();
@@ -20,6 +21,7 @@ export function Chat() {
     activeTab: 'channels',
   });
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+  const [isUsersModalOpen, setIsUsersModalOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { chatRooms } = useGeneral();
 
@@ -35,11 +37,6 @@ export function Chat() {
     logout();
     navigate('/login');
   };
-
-  // const handleSendMessage = async (content: string) => {
-  //   if (!user || !currentChannelIndex) return;
-  //   await createMessage(content, chatRooms[currentChannelIndex].id);
-  // };
 
   const handleSendMessage = async (content: string) => {
     if (!user || !currentChannelIndex) {
@@ -90,7 +87,10 @@ export function Chat() {
               <button className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer" onClick={homeReturn}>
                 <Home size={20} />
               </button>
-              <button className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer">
+              <button
+                onClick={() => setIsUsersModalOpen(true)} 
+                className="p-2 text-[#9D9DA7] rounded-sm hover:bg-[#202022] hover:text-white/80 cursor-pointer"
+              >
                 <Users size={20} />
               </button>
               <div className="mx-2 h-6 w-px bg-[#202022]"></div>
@@ -148,6 +148,10 @@ export function Chat() {
           </button>
         </div>
       </Modal>
+      <ModalUsersList
+        isOpen={isUsersModalOpen}
+        onClose={() => setIsUsersModalOpen(false)}
+      />
     </div>
   );
 }
