@@ -1,4 +1,4 @@
-import React, { useState, useEffec } from "react";
+import React, { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 import { AuthResponse, UserPublic } from "../types";
 import { login as loginService, register as registerService } from "../services/authService";
