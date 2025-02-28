@@ -6,6 +6,7 @@ import { Chat } from './components/Chat';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
 import { Toaster } from 'react-hot-toast';
+import { useGeneral } from './hooks/useGeneral';
 
 function App() {
   return (
@@ -26,10 +27,16 @@ function App() {
             <Route path="/" element={<Navigate to="/chat" replace />} />
           </Routes>
         </Router>
+        <ConditionalToaster />
       </GeneralProvider>
-      <Toaster position='top-center' />
     </AuthProvider>
   );
+}
+
+function ConditionalToaster() {
+  const { currentChannelIndex } = useGeneral();
+
+  return currentChannelIndex === null ? <Toaster position="top-center" /> : null;
 }
 
 export default App;

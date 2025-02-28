@@ -16,7 +16,6 @@ import ConcordLogo from "../assets/concord.png";
 export function Chat() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [currentChannelIndex, setCurrentChannelIndex] = useState<number | null>(null);
   const [sidebarState, setSidebarState] = useState<SidebarState>({
     isOpen: false,
     activeTab: 'channels',
@@ -24,8 +23,10 @@ export function Chat() {
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [isUsersModalOpen, setIsUsersModalOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { chatRooms } = useGeneral();
+  const { chatRooms, setCurrentChatRoomId, currentChannelIndex, setCurrentChannelIndex, unreadMessages } = useGeneral();
   const messages = chatRooms[currentChannelIndex - 1]?.attributes.messages;
+
+  const totalUnreadMessages: any = Object.values(unreadMessages).reduce((acc, count) => acc + count, 0);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -37,6 +38,7 @@ export function Chat() {
 
   const homeReturn = () => {
     setCurrentChannelIndex(null);
+    setCurrentChatRoomId(null);
   };
 
   const handleLogout = () => {
@@ -59,6 +61,7 @@ export function Chat() {
   const handleChannelSelect = (position: number) => {
     setCurrentChannelIndex(position + 1);
     setSidebarState({ ...sidebarState, isOpen: false });
+    setCurrentChatRoomId(chatRooms[position]?.id);
   };
 
   const userColor = user?.color;
@@ -75,7 +78,7 @@ export function Chat() {
       />
 
       <div className="flex-1 flex flex-col">
-        <header className="fixed z-10 w-full h-20 lg:px-24 px-4 bg-[#18181B] bg-opacity-70 border-b border-[#202022] flex items-center justify-between backdrop-blur-md">
+      <header className="fixed z-10 w-full h-20 lg:px-24 px-4 bg-[#18181B] bg-opacity-70 border-b border-[#202022] flex items-center justify-between backdrop-blur-md">
           <div className="flex items-center gap-8">
             <button
               onClick={() => setSidebarState({ ...sidebarState, isOpen: true })}
@@ -86,6 +89,11 @@ export function Chat() {
             <div className="flex flex-row items-center justify-center gap-2">
               {currentChannelIndex && <Hash size={20} className="text-[#9D9DA7]" />}
               <h1 className="font-semibold">{currentChannelIndex ? chatRooms[currentChannelIndex - 1].attributes.name : 'Concord'}</h1>
+              {totalUnreadMessages > 0 && (
+                <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1">
+                  {totalUnreadMessages}
+                </span>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-4">

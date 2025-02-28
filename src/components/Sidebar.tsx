@@ -22,7 +22,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onChannelSelect,
   currentChannel
 }) => {
-  const { chatRooms } = useGeneral();
+  const { chatRooms, unreadMessages  } = useGeneral();
   const [isModalUsersOpen, setIsModalUsersOpen] = useState(false);
   const [isModalChatOpen, setIsModalChatOpen] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<UserAttr[]>([]);
@@ -62,18 +62,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </h3>
             {chatRooms.map((room, index) => (
               <button
-              key={room.id}
-              onClick={() => {
-                onChannelSelect(index);
-              }}
-              className={`cursor-pointer w-full text-left px-2 py-1 rounded transition-colors ${
-                room.id === currentChannel?.id 
-                  ? "bg-zinc-700 text-white"
-                  : "hover:bg-zinc-700/50 text-zinc-300 hover:text-zinc-100"
-              }`}
-            >
-              # {room.attributes.name}
-            </button>
+                key={room.id}
+                onClick={() => {
+                  onChannelSelect(index);
+                }}
+                className={`cursor-pointer w-full text-left px-2 py-1 rounded transition-colors ${
+                  room.id === currentChannel?.id 
+                    ? "bg-zinc-700 text-white"
+                    : "hover:bg-zinc-700/50 text-zinc-300 hover:text-zinc-100"
+                }`}
+              >
+                <div className="flex justify-between items-center">
+                  <span># {room.attributes.name}</span>
+                  {unreadMessages[room.id] > 0 && (
+                    <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1">
+                      {unreadMessages[room.id]}
+                    </span>
+                  )}
+                </div>
+              </button>
             ))}
           </div>
           <div className="mt-4">

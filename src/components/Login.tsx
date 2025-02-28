@@ -16,7 +16,7 @@ export function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0E0E10] px-4">
-      <div className="max-w-xl w-full space-y-8 bg-[#18181B] p-24 rounded-sm shadow-xl">
+      <div className="max-w-xl w-full space-y-8 md:bg-[#18181B] bg-transparent p-4 md:p-24 rounded-sm shadow-xl">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-bold text-zinc-100">We Missed You!</h2>
           <p className="text-sm text-zinc-400">Please sign in to your account</p>
