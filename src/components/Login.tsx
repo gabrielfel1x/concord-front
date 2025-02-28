@@ -1,27 +1,23 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-// import concordLogo from "../../public/concord.png"
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(email, password);
-    const from = location.state?.from?.pathname || '/chat';
-    navigate(from);
+    await login(email, password);
+    navigate('/chat', { replace: true });
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0E0E10] px-4">
-      <div className="max-w-xl w-full space-y-8 bg-[#18181B] p-24 rounded-sm shadow-xl">
+      <div className="max-w-xl w-full space-y-8 md:bg-[#18181B] bg-transparent p-4 md:p-24 rounded-sm shadow-xl">
         <div className="text-center">
-          {/* <img src={concordLogo} className="mx-auto h-28 w-28 -mb-12" /> */}
           <h2 className="mt-6 text-3xl font-bold text-zinc-100">We Missed You!</h2>
           <p className="text-sm text-zinc-400">Please sign in to your account</p>
         </div>

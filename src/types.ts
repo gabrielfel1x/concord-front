@@ -1,21 +1,70 @@
 export interface Message {
   id: string;
   content: string;
-  sender: User;
-  timestamp: Date;
+  chat_room_id: string;
+  created_at: string;
+  user: {
+    name: string;
+    email: string;
+    id: string;
+    color: string;
+  }
 }
 
-export interface User {
+export interface Chatroom {
   id: string;
   name: string;
-  avatar: string;
-  online: boolean;
+  users: UserAttr[];
+  createdAt: string;
+}
+export interface UserAttr {
+  id: string;
+  attributes: {
+    id?: string;
+    name: string;
+    email: string;
+    color: string;
+    messages: string[];
+  };
+}
+export interface User {
+  id?: number;
+	name: string;
+	email: string;
+	password: string;
+	password_confirmation: string;
+  color: string;
 }
 
+export type UserPublic = Omit<User, 'password' | 'password_confirmation'>;
+
+export interface RootObjectUser {
+	user: User;
+}
+
+export type LoginCredentials = Pick<User, 'email' | 'password'>
+
+export type ObjectUserLogin = { user: LoginCredentials }
+
+export interface AuthResponse {
+  id?: number | undefined;
+  user: UserPublic;
+  token: string;
+}
+
+export interface APIResponse<T> {
+  data: {
+    id: string;
+    type: string;
+    attributes: T;
+  };
+}
 export interface Channel {
   id: string;
-  name: string;
-  messages: Message[];
+  attributes: {
+    name: string;
+    messages: Message[];
+  };
 }
 
 export interface AuthState {

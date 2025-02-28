@@ -1,26 +1,48 @@
-import React from 'react';
-import { X, Users, MessageSquare } from 'lucide-react';
-import { Channel, User, SidebarState } from '../types';
+import React, { useState } from "react";
+import { X, Plus } from "lucide-react";
+import { SidebarState, UserAttr } from "../types";
+import { ModalUsers } from "./ModalUsers";
+import { ModalCreateChat } from "./ModalCreateChat";
+import { createChatroom } from "../services/chatRoomService";
+import { Channel } from "../types";
+import { useGeneral } from "../hooks/useGeneral";
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
-  activeTab: SidebarState['activeTab'];
-  setActiveTab: (tab: SidebarState['activeTab']) => void;
-  channels: Channel[];
-  friends: User[];
-  onChannelSelect: (channel: Channel) => void;
+  activeTab: SidebarState["activeTab"];
+  setActiveTab: (tab: SidebarState["activeTab"]) => void;
+  onChannelSelect: (position: number) => void;
+  currentChannel: Channel | null;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onClose,
-  activeTab,
-  setActiveTab,
-  channels,
-  friends,
   onChannelSelect,
+  currentChannel
 }) => {
+  const { chatRooms, unreadMessages  } = useGeneral();
+  const [isModalUsersOpen, setIsModalUsersOpen] = useState(false);
+  const [isModalChatOpen, setIsModalChatOpen] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState<UserAttr[]>([]);
+
+  const handleConfirmUsers = (users: UserAttr[]) => {
+    setSelectedUsers(users);
+    setIsModalUsersOpen(false);
+    setIsModalChatOpen(true);
+  };
+
+  const handleConfirmChat = async (name: string) => {
+    const chatroomPromise = createChatroom(name, selectedUsers.map((u) => u.id));
+
+    try {
+      await chatroomPromise;
+    } catch (error) {
+      console.error("error creating chatroom:", error);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -33,82 +55,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        <div className="flex border-b border-zinc-700">
-          <button
-            onClick={() => setActiveTab('channels')}
-            className={`flex-1 p-3 text-sm font-medium ${
-              activeTab === 'channels'
-                ? 'text-zinc-100 border-b-2 border-[#34AB70]'
-                : 'text-zinc-400 hover:text-zinc-100'
-            }`}
-          >
-            <div className="flex items-center justify-center gap-2 cursor-pointer p-2">
-              <MessageSquare size={16} />
-              <span>Channels</span>
-            </div>
-          </button>
-          <button
-            onClick={() => setActiveTab('friends')}
-            className={`flex-1 p-3 text-sm font-medium ${
-              activeTab === 'friends'
-                ? 'text-zinc-100 border-b-2 border-[#34AB70]'
-                : 'text-zinc-400 hover:text-zinc-100'
-            }`}
-          >
-            <div className="flex items-center justify-center gap-2 cursor-pointer p-2">
-              <Users size={16} />
-              <span>Friends</span>
-            </div>
-          </button>
-        </div>
-
         <div className="p-4">
-          {activeTab === 'channels' ? (
-            <div className="space-y-2">
-              <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
-                Channels
-              </h3>
-              {channels.map((channel) => (
-                <button
-                  key={channel.id}
-                  onClick={() => onChannelSelect(channel)}
-                  className="cursor-pointer w-full text-left px-2 py-1 rounded hover:bg-zinc-700/50 text-zinc-300 hover:text-zinc-100 transition-colors"
-                >
-                  # {channel.name}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
-                Friends
-              </h3>
-              {friends.map((friend) => (
-                <div
-                  key={friend.id}
-                  className="flex items-center gap-3 px-2 py-1 rounded hover:bg-zinc-700/50 cursor-pointer"
-                >
-                  <div className="relative">
-                    <img
-                      src={friend.avatar}
-                      alt={friend.name}
-                      className="w-8 h-8 rounded-full"
-                    />
-                    {/* {friend.online && (
-                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-zinc-800" />
-                    )} */}
-                  </div>
-                  <span className="text-zinc-300">{friend.name}</span>
+          <div className="space-y-2">
+            <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
+              Chat Rooms
+            </h3>
+            {chatRooms.map((room, index) => (
+              <button
+                key={room.id}
+                onClick={() => {
+                  onChannelSelect(index);
+                }}
+                className={`cursor-pointer w-full text-left px-2 py-1 rounded transition-colors ${
+                  room.id === currentChannel?.id 
+                    ? "bg-zinc-700 text-white"
+                    : "hover:bg-zinc-700/50 text-zinc-300 hover:text-zinc-100"
+                }`}
+              >
+                <div className="flex justify-between items-center">
+                  <span># {room.attributes.name}</span>
+                  {unreadMessages[room.id] > 0 && (
+                    <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1">
+                      {unreadMessages[room.id]}
+                    </span>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
+              </button>
+            ))}
+          </div>
+          <div className="mt-4">
+            <button
+              onClick={() => setIsModalUsersOpen(true)}
+              className="cursor-pointer flex items-center gap-2 bg-[#34AB70] hover:bg-[#34AB70]/80 px-4 py-2 rounded-md transition-colors w-full"
+            >
+              <Plus size={20} className="text-white" />
+              <span className="text-white">New Chatroom</span>
+            </button>
+          </div>
         </div>
       </div>
-      <div
-        className="flex-1 bg-black/50"
-        onClick={onClose}
-      />
+      <div className="flex-1 bg-black/50" onClick={onClose} />
+
+      <ModalUsers isOpen={isModalUsersOpen} onClose={() => setIsModalUsersOpen(false)} onConfirm={handleConfirmUsers} maxUsers={7} />
+      <ModalCreateChat isOpen={isModalChatOpen} onClose={() => setIsModalChatOpen(false)} onConfirm={handleConfirmChat} />
     </div>
   );
 };
